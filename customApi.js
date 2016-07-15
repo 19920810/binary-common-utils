@@ -1,13 +1,16 @@
 var observer = require('./observer');
 var tools = require('./tools');
-var storageManager = require('./storageManager');
 var LiveApi = require('binary-live-api').LiveApi;
 
 var CustomApi = function CustomApi(websocketMock) {
-	var option = {
-		language: storageManager.get('lang'),
-		appId: storageManager.get('appId'),
-	};
+	var option = {};
+	if ( typeof window !== 'undefined' ) {
+		var storageManager = require('./storageManager');
+		option = {
+			language: storageManager.get('lang'),
+			appId: storageManager.get('appId'),
+		};
+	}
 	if ( typeof WebSocket === 'undefined' ) {
 		if ( websocketMock ) {
 			option.websocket = websocketMock;
@@ -85,12 +88,11 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 			authorize: function authorize(response) {
 				var token;
 				if ( !tools.apiFailed(response) ) {
-					token = response.echo_req.authorize;
-					var authorize = response.authorize;
-					observer.emit('ui.log', 'Logged in to: ' + storageManager.getToken(token).account_name, 'info');
-					observer.emit('api.authorize', authorize);
+					observer.emit('api.authorize', response.authorize);
 				} else {
-					storageManager.removeToken(token);
+					if ( typeof window !== 'undefined' ) {
+						storageManager.removeToken(response.echo_req.authorize);
+					}
 				}
 			},
 			_default: function _default(response) {
