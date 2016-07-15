@@ -1,6 +1,6 @@
 {
   "name": "binary-common-utils",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Utilities that are used to develop binary.com apps",
   "main": "index.js",
   "scripts": {
