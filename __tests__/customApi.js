@@ -14,7 +14,7 @@ describe('CustomApi', function() {
 		var message;
 		before(function(done){
 			this.timeout('5000');
-			observer.registerOnce('ui.error', function(error) {
+			observer.registerOnce('api.error', function(error) {
 				message = error;
 				done();
 			});
@@ -62,7 +62,7 @@ describe('CustomApi', function() {
 				api.authorize('c9A3gPFcqQtAQDW');
 			})
 			.pipe(function(chainDone){
-				observer.registerOnce('ui.error', function(error) {
+				observer.registerOnce('api.error', function(error) {
 					message = error;
 					done();
 				});

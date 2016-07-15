@@ -69,16 +69,6 @@ describe('Misc Tools', function(){
 			expect(tools.getUTCTime(date)).to.be.equal('01:11:10');
 		});
 	});
-	describe('apiFailed', function(){
-		it('apiFailed detects a failed api response', function(){
-			observer.registerOnce('ui.error', function(error){
-				expect(error).to.be.equal('Error Message');
-			});
-			expect(tools.apiFailed({
-				error: 'Error Message'
-			})).to.be.ok;
-		});
-	});
 });
 describe('Xml Tools', function(){
 	var marketsObj = {};
