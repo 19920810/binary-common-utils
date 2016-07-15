@@ -54,8 +54,6 @@ module.exports = {
 					actionList[index](data);
 				}
 				resolve();
-			} else {
-				reject(Error('Event not found'));
 			}
 		});
 	},
