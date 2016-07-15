@@ -1,5 +1,4 @@
 var observer = require('./observer');
-var tools = require('./tools');
 var LiveApi = require('binary-live-api').LiveApi;
 
 var CustomApi = function CustomApi(websocketMock) {
@@ -58,10 +57,19 @@ var CustomApi = function CustomApi(websocketMock) {
 };
 
 CustomApi.prototype = Object.create(LiveApi.prototype, {
+	apiFailed: {
+		value: function apiFailed(response){
+			if (response.error) {
+				observer.emit('ui.error', response.error);
+				return true;
+			}
+			return false;
+		}
+	}
 	events: {
 		value: {
 			tick: function tick(response) {
-				if ( !tools.apiFailed(response) ) {
+				if ( !this.apiFailed(response) ) {
 					var tick = response.tick;
 					observer.emit('ui.log', 'tick received at: ' + tick.epoch);
 					observer.emit('api.tick', {
@@ -72,7 +80,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 				}
 			},
 			history: function history(response) {
-				if ( !tools.apiFailed(response) ) {
+				if ( !this.apiFailed(response) ) {
 					var ticks = [];
 					var history = response.history;
 					history.times.forEach(function (time, index) {
@@ -87,7 +95,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 			},
 			authorize: function authorize(response) {
 				var token;
-				if ( !tools.apiFailed(response) ) {
+				if ( !this.apiFailed(response) ) {
 					observer.emit('api.authorize', response.authorize);
 				} else {
 					if ( typeof window !== 'undefined' ) {
@@ -96,7 +104,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 				}
 			},
 			_default: function _default(response) {
-				if ( !tools.apiFailed(response) ) {
+				if ( !this.apiFailed(response) ) {
 					var msg_type = response.msg_type;
 					observer.emit('ui.log', response);
 					observer.emit('api.' + msg_type, response[msg_type]);
