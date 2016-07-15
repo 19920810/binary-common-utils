@@ -3,14 +3,14 @@ var tools = require('./tools');
 var storageManager = require('./storageManager');
 var LiveApi = require('binary-live-api').LiveApi;
 
-var CustomApi = function CustomApi(useMock) {
+var CustomApi = function CustomApi(websocketMock) {
 	var option = {
 		language: storageManager.get('lang'),
 		appId: storageManager.get('appId'),
 	};
 	if ( typeof WebSocket === 'undefined' ) {
-		if ( useMock ) {
-			option.websocket = require('./mock/websocket');
+		if ( websocketMock ) {
+			option.websocket = websocketMock;
 		} else {
 			option.websocket = require('ws');
 		}
