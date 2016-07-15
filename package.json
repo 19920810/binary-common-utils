@@ -4,7 +4,8 @@
   "description": "Utilities that are used to develop binary.com apps",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./__tests__/*.js"
+    "test": "mocha ./__tests__/*.js",
+    "patch": "npm test && npm version patch && npm publish"
   },
   "repository": {
     "type": "git",

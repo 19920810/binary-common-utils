@@ -60,23 +60,23 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 	apiFailed: {
 		value: function apiFailed(response){
 			if (response.error) {
-				observer.emit('ui.error', response.error);
+				observer.emit('api.error', response.error);
 				return true;
 			}
 			return false;
 		}
-	}
+	},
 	events: {
 		value: {
 			tick: function tick(response) {
 				if ( !this.apiFailed(response) ) {
 					var tick = response.tick;
-					observer.emit('ui.log', 'tick received at: ' + tick.epoch);
+					observer.emit('api.log', 'tick received at: ' + tick.epoch);
 					observer.emit('api.tick', {
 						epoch: +tick.epoch,
 						quote: +tick.quote,
 					});
-					observer.emit('ui.log', tick);
+					observer.emit('api.log', tick);
 				}
 			},
 			history: function history(response) {
@@ -89,7 +89,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 							quote: +history.prices[index]
 						});
 					});
-					observer.emit('ui.log', ticks);
+					observer.emit('api.log', ticks);
 					observer.emit('api.history', ticks);
 				}
 			},
@@ -106,7 +106,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 			_default: function _default(response) {
 				if ( !this.apiFailed(response) ) {
 					var msg_type = response.msg_type;
-					observer.emit('ui.log', response);
+					observer.emit('api.log', response);
 					observer.emit('api.' + msg_type, response[msg_type]);
 				}
 			},
