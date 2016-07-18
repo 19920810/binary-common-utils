@@ -41,6 +41,9 @@ module.exports = {
 		});
 	},
 	parseQueryString: function parseQueryString() {
+		if ( typeof window === 'undefined' ){
+			return {};
+		}
 		var str = window.location.search;
 		var objURL = {};
 		str.replace(
@@ -87,7 +90,7 @@ module.exports = {
 	},
 	xmlToStr: function xmlToStr(xml){
 		var serializer;
-		if (!window.DOMParser) {
+		if (typeof window === 'undefined' || !window.DOMParser) {
 			var _XMLSerializer = require('xmldom').XMLSerializer;
 			serializer = new _XMLSerializer(); 
 			return serializer.serializeToString(xml);
@@ -99,17 +102,19 @@ module.exports = {
 	strToXml: function strToXml(str) {
 		var xmlDoc;
 		var parser;
-		if (window.DOMParser) {
-			parser = new DOMParser();
-			xmlDoc = parser.parseFromString(str, "text/xml");
-		} else if (window.ActiveXObject){
-			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-			xmlDoc.async = false;
-			xmlDoc.loadXML(str);
-		} else {
+		if ( typeof window !== 'undefined' ) {
 			var _DOMParser = require('xmldom').DOMParser;
 			parser = new _DOMParser();
 			xmlDoc = parser.parseFromString(str, "text/xml");
+		} else {
+			if (window.DOMParser) {
+				parser = new DOMParser();
+				xmlDoc = parser.parseFromString(str, "text/xml");
+			} else if (window.ActiveXObject){
+				xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+				xmlDoc.async = false;
+				xmlDoc.loadXML(str);
+			}
 		}
 		return xmlDoc;
 	}
