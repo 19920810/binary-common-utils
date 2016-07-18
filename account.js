@@ -18,5 +18,19 @@ module.exports = {
 					callback('Error');
 				}
 			});
+	},
+	logoutAllTokens: function logoutAllTokens(callback) {
+		var api = new CustomApi()._originalApi;
+		var tokenList = storageManager.getTokenList();
+		var token = tokenList[0].token;
+		api.authorize(token)
+			.then(function (response) {
+				storageManager.removeAllTokens();
+				api.logOut();
+				api.disconnect();
+				if ( callback ) {
+					callback();
+				}
+			});
 	}
 };
