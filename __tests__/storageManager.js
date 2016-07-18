@@ -20,13 +20,13 @@ describe('StorageManager', function(){
 	describe('token save/retrieve mechanism', function(){
 		var realToken;
 		before(function(){
-			localStorage.tokenList = [
+			localStorage.tokenList = JSON.stringify([
 				{
 					account_name: 'Real Account',
 					token: 'RealToken',
 					isVirtual: 0
 				}
-			];
+			]);
 		});
 		it('getTokenList should not be empty', function(){
 			expect(storageManager.getTokenList()).not.to.be.empty;
