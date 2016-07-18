@@ -3,7 +3,7 @@ module.exports = {
 		if (!localStorage.hasOwnProperty('tokenList')) {
 			localStorage.tokenList = [];
 		} else if ( typeof localStorage.tokenList === 'string' ) { // compatibility with old code
-			localStorage.tokenList = JSON.dumps(localStorage.tokenList);
+			localStorage.tokenList = JSON.parse(localStorage.tokenList);
 		}
 		return localStorage.tokenList;
 	},
