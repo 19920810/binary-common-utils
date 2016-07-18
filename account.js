@@ -1,4 +1,4 @@
-var CustomApi = require('./CustomApi');
+var CustomApi = require('./customApi');
 var storageManager = require('./storageManager');
 
 module.exports = {
