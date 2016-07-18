@@ -3,9 +3,7 @@ var storageManager = require('./storageManager');
 
 module.exports = {
 	addTokenIfValid: function addTokenIfValid(token, callback) {
-		var LiveApi = require('binary-live-api')
-			.LiveApi;
-		var api = new LiveApi();
+		var api = new CustomApi()._originalApi;
 		api.authorize(token)
 			.then(function (response) {
 				api.disconnect();
@@ -15,7 +13,7 @@ module.exports = {
 				}
 			}, function (reason) {
 				api.disconnect();
-				removeToken(token);
+				storageManager.removeToken(token);
 				if (callback) {
 					callback('Error');
 				}

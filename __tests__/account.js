@@ -9,8 +9,9 @@ describe('Account', function(){
 		this.timeout('3000');
 		localStorage.tokenList = [
 			{
-				account_name: 'Real Account',
-				token: 'c9A3gPFcqQtAQDW'
+				account_name: 'Virtual Account',
+				token: 'c9A3gPFcqQtAQDW',
+				isVirtual: 1
 			}
 		];
 		account.addTokenIfValid('FakeToken', function(result){
