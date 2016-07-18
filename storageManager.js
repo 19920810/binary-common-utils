@@ -1,15 +1,19 @@
 module.exports = {
 	getTokenList: function getTokenList() {
 		if (!localStorage.hasOwnProperty('tokenList')) {
-			localStorage.tokenList = [];
-		} else if ( typeof localStorage.tokenList === 'string' ) { // compatibility with old code
-			try {
-				localStorage.tokenList = JSON.parse(localStorage.tokenList);
-			} catch(e) {
-				localStorage.tokenList = [];
-			}
+			localStorage.tokenList = '[]';
 		}
-		return localStorage.tokenList;
+		var tokenList;
+		try {
+			tokenList = JSON.parse(localStorage.tokenList);
+		} catch (e) {
+			localStorage.tokenList = '[]';
+			tokenList = [];
+		}
+		return tokenList;
+	},
+	setTokenList: function setTokenList(tokenList) {
+		localStorage.tokenList = JSON.stringify(tokenList);
 	},
 	findAccount: function findAccount(account_name) {
 		var tokenList = this.getTokenList();
@@ -20,9 +24,6 @@ module.exports = {
 			}
 		});
 		return index;
-	},
-	setTokenList: function setTokenList(tokenList) {
-		localStorage.tokenList = tokenList;
 	},
 	addToken: function addToken(token, account_name, isVirtual) {
 		var tokenList = this.getTokenList();
