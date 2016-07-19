@@ -26,11 +26,12 @@ module.exports = {
 		api.authorize(token)
 			.then(function (response) {
 				storageManager.removeAllTokens();
-				api.logOut();
-				api.disconnect();
-				if ( callback ) {
-					callback();
-				}
+				api.logOut().then(function(){
+					api.disconnect();
+					if ( callback ) {
+						callback();
+					}
+				});
 			});
 	}
 };
