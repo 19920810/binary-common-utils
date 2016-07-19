@@ -96,8 +96,6 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 				var token;
 				if ( !apiFailed(response) ) {
 					observer.emit('api.authorize', response.authorize);
-				} else {
-					observer.emit('api.loginFailed', response.echo_req.authorize);
 				}
 			},
 			_default: function _default(response) {
