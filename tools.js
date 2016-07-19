@@ -117,8 +117,5 @@ module.exports = {
 			}
 		}
 		return xmlDoc;
-	},
-	getFirstObjectValue: function getFirstObjectValue(obj){
-		return obj[Object.keys(obj)[0]];
 	}
 };
