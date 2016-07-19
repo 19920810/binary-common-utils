@@ -98,6 +98,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 					observer.emit('api.authorize', response.authorize);
 				} else {
 					if ( typeof window !== 'undefined' ) {
+						var storageManager = require('./storageManager');
 						storageManager.removeToken(response.echo_req.authorize);
 					}
 				}
