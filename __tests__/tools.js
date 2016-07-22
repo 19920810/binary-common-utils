@@ -1,3 +1,4 @@
+'use strict';
 var tools = require('../tools');
 var Observer = require('../observer');
 var observer = new Observer();

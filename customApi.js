@@ -1,3 +1,4 @@
+'use strict';
 var Observer = require('./observer');
 var observer = new Observer();
 var LiveApi = require('binary-live-api').LiveApi;

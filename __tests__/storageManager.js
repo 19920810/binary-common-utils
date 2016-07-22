@@ -1,3 +1,4 @@
+'use strict';
 var storageManager = require('../storageManager');
 var expect = require('chai').expect;
 require('../compatibility');

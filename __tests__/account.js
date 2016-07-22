@@ -1,3 +1,4 @@
+'use strict';
 require('../compatibility');
 var storageManager = require('../storageManager');
 var account = require('../account');

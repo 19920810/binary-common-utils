@@ -1,3 +1,4 @@
+'use strict';
 module.exports = {
 	getTokenList: function getTokenList() {
 		if (!localStorage.hasOwnProperty('tokenList')) {

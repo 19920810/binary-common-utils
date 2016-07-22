@@ -1,3 +1,4 @@
+'use strict';
 var Observer = function Observer(){
 	if ( Observer.instance ){
 		return Observer.instance;

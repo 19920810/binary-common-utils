@@ -1,3 +1,4 @@
+'use strict';
 var CustomApi = require('./customApi');
 var storageManager = require('./storageManager');
 

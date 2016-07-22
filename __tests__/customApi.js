@@ -1,3 +1,4 @@
+'use strict';
 require('../compatibility');
 
 var asyncChain = require('../tools').asyncChain;
