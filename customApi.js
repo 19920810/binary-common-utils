@@ -48,6 +48,9 @@ var CustomApi = function CustomApi(websocketMock) {
 		authorize: function(){
 			return this._originalApi.authorize.apply(this._originalApi, Array.prototype.slice.call(arguments));
 		},
+		balance: function(){
+			return this._originalApi.subscribeToBalance.apply(this._originalApi, Array.prototype.slice.call(arguments));
+		},
 	};
 	var that = this;
 	Object.keys(events).forEach(function(e){
