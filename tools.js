@@ -1,4 +1,5 @@
-var observer = require('./observer');
+var Observer = require('./observer');
+var observer = new Observer();
 var _ = require('underscore');
 
 module.exports = {

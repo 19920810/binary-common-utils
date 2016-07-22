@@ -1,4 +1,5 @@
-var observer = require('./observer');
+var Observer = require('./observer');
+var observer = new Observer();
 var LiveApi = require('binary-live-api').LiveApi;
 
 var apiFailed = function apiFailed(response){

@@ -1,4 +1,5 @@
-var observer = require('../observer');
+var Observer = require('../observer');
+var observer = new Observer();
 var expect = require('chai').expect;
 require('../compatibility');
 
@@ -18,5 +19,8 @@ describe('Observer', function(){
 	it('observer should trigger the action defined for an event', function(){
 		expect(window.newVar).to.be.a('string')
 			.and.to.be.equal('Hello, thanks for defining me');
+	});
+	after(function(){
+		observer.destroy();
 	});
 });

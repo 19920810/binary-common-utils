@@ -1,5 +1,6 @@
 var tools = require('../tools');
-var observer = require('../observer');
+var Observer = require('../observer');
+var observer = new Observer();
 var expect = require('chai').expect;
 require('../compatibility');
 
@@ -104,5 +105,8 @@ describe('Xml Tools', function(){
 	it('xmlToStr should convert market xml back to string', function(){
 		var newMarketStr = tools.xmlToStr(marketsXml);
 		expect(newMarketStr).to.be.equal(marketsXmlStr);
+	});
+	after(function(){
+		observer.destroy();
 	});
 });

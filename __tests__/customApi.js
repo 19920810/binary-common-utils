@@ -3,7 +3,8 @@ require('../compatibility');
 var asyncChain = require('../tools').asyncChain;
 var CustomApi = require('../customApi');
 var expect = require('chai').expect;
-var observer = require('../observer');
+var Observer = require('../observer');
+var observer = new Observer();
 
 describe('CustomApi', function() {
 	var api;
@@ -74,5 +75,8 @@ describe('CustomApi', function() {
 			expect(message).to.have.property('code')
 				.that.be.equal('InvalidContractProposal');
 		});
+	});
+	after(function(){
+		observer.destroy();
 	});
 });
