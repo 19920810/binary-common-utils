@@ -27,10 +27,10 @@
     "babel-register": "^6.9.0",
     "jsdom": "^9.4.1",
     "jsdom-global": "^2.0.0",
+    "app-module-path": "^1.1.0",
     "xmldom": "^0.1.22"
   },
   "devDependencies": {
-    "app-module-path": "^1.1.0",
     "chai": "^3.5.0",
     "mocha": "^2.5.3"
   }
