@@ -57,4 +57,9 @@ module.exports = {
 			}
 		});
 	},
+	destroy: {
+		value: function destroy(){
+			this._eventActionMap = {};
+		}
+	}
 };
