@@ -91,15 +91,8 @@ module.exports = {
 		return xmlStr;
 	},
 	xmlToStr: function xmlToStr(xml){
-		var serializer;
-		if (typeof window === 'undefined' || !window.DOMParser) {
-			var _XMLSerializer = require('xmldom').XMLSerializer;
-			serializer = new _XMLSerializer(); 
-			return serializer.serializeToString(xml);
-		} else {
-			serializer = new XMLSerializer(); 
-			return serializer.serializeToString(xml);
-		}
+		var serializer = new XMLSerializer(); 
+		return serializer.serializeToString(xml);
 	},
 	strToXml: function strToXml(str) {
 		var xmlDoc;

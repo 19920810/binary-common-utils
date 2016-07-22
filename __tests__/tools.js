@@ -3,7 +3,6 @@ var tools = require('../tools');
 var Observer = require('../observer');
 var observer = new Observer();
 var expect = require('chai').expect;
-require('../compatibility');
 
 describe('Misc Tools', function(){
 	describe('asyncChain function', function(){
@@ -73,7 +72,7 @@ describe('Misc Tools', function(){
 	});
 });
 describe('Xml Tools', function(){
-	var marketsObj = {};
+	var markets = {};
 	var marketsXml = null;
 	var marketsXmlStr = '';
 	before(function(){

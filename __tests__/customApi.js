@@ -1,5 +1,4 @@
 'use strict';
-require('../compatibility');
 
 var asyncChain = require('../tools').asyncChain;
 var CustomApi = require('../customApi');

@@ -2,7 +2,6 @@
 var Observer = require('../observer');
 var observer = new Observer();
 var expect = require('chai').expect;
-require('../compatibility');
 
 describe('Observer', function(){
 	before(function(done){
