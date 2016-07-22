@@ -1,7 +1,4 @@
 'use strict';
-var Observer = require('./observer');
-var observer = new Observer();
-var _ = require('underscore');
 
 module.exports = {
 	asyncChain: function asyncChain(){
@@ -97,19 +94,13 @@ module.exports = {
 	strToXml: function strToXml(str) {
 		var xmlDoc;
 		var parser;
-		if ( typeof window !== 'undefined' ) {
-			var _DOMParser = require('xmldom').DOMParser;
-			parser = new _DOMParser();
+		if (window.DOMParser) {
+			parser = new DOMParser();
 			xmlDoc = parser.parseFromString(str, "text/xml");
-		} else {
-			if (window.DOMParser) {
-				parser = new DOMParser();
-				xmlDoc = parser.parseFromString(str, "text/xml");
-			} else if (window.ActiveXObject){
-				xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
-				xmlDoc.async = false;
-				xmlDoc.loadXML(str);
-			}
+		} else if (window.ActiveXObject){
+			xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+			xmlDoc.async = false;
+			xmlDoc.loadXML(str);
 		}
 		return xmlDoc;
 	}

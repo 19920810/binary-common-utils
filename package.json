@@ -30,7 +30,6 @@
     "jsdom": "^9.4.1",
     "jsdom-global": "^2.0.0",
     "ws": "^1.1.1",
-    "underscore": "^1.8.3",
     "xmldom": "^0.1.22"
   },
   "peerDependencies": {
@@ -41,7 +40,6 @@
     "jsdom": "^9.4.1",
     "jsdom-global": "^2.0.0",
     "ws": "^1.1.1",
-    "underscore": "^1.8.3",
     "xmldom": "^0.1.22"
   }
 }
