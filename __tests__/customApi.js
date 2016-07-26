@@ -15,10 +15,10 @@ describe('CustomApi', function() {
 		var message;
 		before(function(done){
 			this.timeout('5000');
-			observer.registerOnce('api.error', function(error) {
+			observer.register('api.error', function(error) {
 				message = error;
 				done();
-			});
+			}, true);
 			api.authorize('FakeToken');
 		});
 		it('authorize return invalid token', function() {
@@ -31,13 +31,13 @@ describe('CustomApi', function() {
 		var message2;
 		before(function(done){
 			this.timeout('5000');
-			observer.registerOnce('api.history', function(data) {
+			observer.register('api.history', function(data) {
 				message1 = data;
-			});
-			observer.registerOnce('api.tick', function(data) {
+			}, true);
+			observer.register('api.tick', function(data) {
 				message2 = data;
 				done();
-			});
+			}, true);
 			api.history('R_100', {
 				"end": "latest",
 				"count": 600,
@@ -57,16 +57,16 @@ describe('CustomApi', function() {
 			this.timeout('5000');
 			asyncChain()
 			.pipe(function(chainDone){
-				observer.registerOnce('api.authorize', function(){
+				observer.register('api.authorize', function(){
 					chainDone();
-				});
+				}, true);
 				api.authorize('c9A3gPFcqQtAQDW');
 			})
 			.pipe(function(chainDone){
-				observer.registerOnce('api.error', function(error) {
+				observer.register('api.error', function(error) {
 					message = error;
 					done();
-				});
+				}, true);
 				api.buy('uw2mk7no3oktoRVVsB4Dz7TQnFfABuFDgO95dlxfMxRuPUsz', 100);
 			})
 			.exec();

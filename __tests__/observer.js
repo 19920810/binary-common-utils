@@ -5,10 +5,10 @@ var expect = require('chai').expect;
 
 describe('Observer', function(){
 	before(function(done){
-		observer.registerOnce('global.createVar', function(obj){
+		observer.register('global.createVar', function(obj){
 			window[obj.name] = obj.text;
 			done();
-		});
+		}, true);
 		setTimeout(function(){
 			observer.emit('global.createVar', {
 				name: 'newVar',

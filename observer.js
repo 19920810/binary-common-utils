@@ -8,32 +8,30 @@ var Observer = function Observer(){
 };
 Observer.prototype = Object.create(null, {
 	register: {
-		value: function register(_event, action){
-			if ( !_event || !action ){
-				throw(Error('Both event and action are needed to register.'));
-			}
-			var actionList = this._eventActionMap[_event];
-			if ( actionList ) {
-				actionList.push({
-					action: action,
-					searchBy: action
-				});
-			} else {
-				this._eventActionMap[_event] = [{
-					action: action,
-					searchBy: action
-				}];
-			}
-		}
-	},
-	registerOnce: {
-		value: function registerOnce(_event, _action){
-			if ( !_event || !_action ){
-				throw(Error('Both event and action are needed to register.'));
-			}
+		value: function register(_event, _action, once, unregisterIfError){
 			var that = this;
+			var apiError = function apiError(error){
+				if ( error.type === unregisterIfError.type ) {
+					that.unregister('api.error', apiError);
+					unregisterIfError.unregister.forEach(function(unregister){
+						if ( unregister instanceof Array ) {
+							that.unregister.apply(that, unregister);
+						} else {
+							that.unregisterAll(unregister);
+						}
+					});
+				}
+			};
+			if ( unregisterIfError ) {
+				this.register('api.error', apiError);
+			}
 			var action = function action() {
-				that.unregister(_event, _action);
+				if ( once ) {
+					that.unregister(_event, _action);
+				}
+				if ( unregisterIfError ) {
+					that.unregister('api.error', apiError);
+				}
 				_action.apply(null, Array.prototype.slice.call(arguments));
 			};
 			var actionList = this._eventActionMap[_event];
