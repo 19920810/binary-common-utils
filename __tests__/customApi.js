@@ -77,6 +77,6 @@ describe('CustomApi', function() {
 		});
 	});
 	after(function(){
-		observer.destroy();
+		observer._destroy();
 	});
 });

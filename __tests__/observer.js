@@ -21,6 +21,6 @@ describe('Observer', function(){
 			.and.to.be.equal('Hello, thanks for defining me');
 	});
 	after(function(){
-		observer.destroy();
+		observer._destroy();
 	});
 });

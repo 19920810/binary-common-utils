@@ -107,6 +107,6 @@ describe('Xml Tools', function(){
 		expect(newMarketStr).to.be.equal(marketsXmlStr);
 	});
 	after(function(){
-		observer.destroy();
+		observer._destroy();
 	});
 });
