@@ -14,9 +14,15 @@ Observer.prototype = Object.create(null, {
 			}
 			var actionList = this._eventActionMap[_event];
 			if ( actionList ) {
-				actionList.push(action);
+				actionList.push({
+					action: action,
+					searchBy: action
+				});
 			} else {
-				this._eventActionMap[_event] = [action];
+				this._eventActionMap[_event] = [{
+					action: action,
+					searchBy: action
+				}];
 			}
 		}
 	},
@@ -27,14 +33,20 @@ Observer.prototype = Object.create(null, {
 			}
 			var that = this;
 			var action = function action() {
-				that.unregister(_event, action);
+				that.unregister(_event, _action);
 				_action.apply(null, Array.prototype.slice.call(arguments));
 			};
 			var actionList = this._eventActionMap[_event];
 			if ( actionList ) {
-				actionList.push(action);
+				actionList.push({
+					action: action,
+					searchBy: _action
+				});
 			} else {
-				this._eventActionMap[_event] = [action];
+				this._eventActionMap[_event] = [{
+					action: action,
+					searchBy: _action
+				}];
 			}
 		}
 	},
@@ -45,7 +57,7 @@ Observer.prototype = Object.create(null, {
 			var i;
 			if ( actionList ) {
 				for ( i in actionList ) {
-					if ( actionList[i] === _function ) {
+					if ( actionList[i].searchBy === _function ) {
 						toDeleteIndexes.push(i);
 					}
 				}
@@ -67,7 +79,7 @@ Observer.prototype = Object.create(null, {
 				if (that._eventActionMap.hasOwnProperty(_event)){
 					var actionList = that._eventActionMap[_event];
 					for ( var index in actionList ) {
-						actionList[index](data);
+						actionList[index].action(data);
 					}
 					resolve();
 				}
