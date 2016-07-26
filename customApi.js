@@ -1,18 +1,10 @@
 'use strict';
 var Observer = require('./observer');
-var observer = new Observer();
 var LiveApi = require('binary-live-api').LiveApi;
-
-var apiFailed = function apiFailed(response){
-	if (response.error) {
-		observer.emit('api.error', response.error);
-		return true;
-	}
-	return false;
-};
 
 var CustomApi = function CustomApi(websocketMock) {
 	var option = {};
+	this.observer = new Observer();
 	if ( typeof window !== 'undefined' ) {
 		var storageManager = require('./storageManager');
 		option = {
@@ -55,7 +47,7 @@ var CustomApi = function CustomApi(websocketMock) {
 	};
 	var that = this;
 	Object.keys(events).forEach(function(e){
-		var _event = (!that.events[e])? that.events._default: that.events[e];
+		var _event = ((!that.events[e])? that.events._default: that.events[e]).bind(that);
 		that._originalApi.events.on(e, _event);
 		that[e] = function(){
 			var promise = events[e].apply(that, Array.prototype.slice.call(arguments));
@@ -70,21 +62,30 @@ var CustomApi = function CustomApi(websocketMock) {
 };
 
 CustomApi.prototype = Object.create(LiveApi.prototype, {
+	apiFailed:{
+		value: function apiFailed(response){
+			if (response.error) {
+				this.observer.emit('api.error', response.error);
+				return true;
+			}
+			return false;
+		}
+	},
 	events: {
 		value: {
 			tick: function tick(response) {
-				if ( !apiFailed(response) ) {
+				if ( !this.apiFailed(response) ) {
 					var tick = response.tick;
-					observer.emit('api.log', 'tick received at: ' + tick.epoch);
-					observer.emit('api.tick', {
+					this.observer.emit('api.log', 'tick received at: ' + tick.epoch);
+					this.observer.emit('api.tick', {
 						epoch: +tick.epoch,
 						quote: +tick.quote,
 					});
-					observer.emit('api.log', tick);
+					this.observer.emit('api.log', tick);
 				}
 			},
 			history: function history(response) {
-				if ( !apiFailed(response) ) {
+				if ( !this.apiFailed(response) ) {
 					var ticks = [];
 					var history = response.history;
 					history.times.forEach(function (time, index) {
@@ -93,21 +94,20 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 							quote: +history.prices[index]
 						});
 					});
-					observer.emit('api.log', ticks);
-					observer.emit('api.history', ticks);
+					this.observer.emit('api.log', ticks);
+					this.observer.emit('api.history', ticks);
 				}
 			},
 			authorize: function authorize(response) {
-				var token;
-				if ( !apiFailed(response) ) {
-					observer.emit('api.authorize', response.authorize);
+				if ( !this.apiFailed(response) ) {
+					this.observer.emit('api.authorize', response.authorize);
 				}
 			},
 			_default: function _default(response) {
-				if ( !apiFailed(response) ) {
+				if ( !this.apiFailed(response) ) {
 					var msg_type = response.msg_type;
-					observer.emit('api.log', response);
-					observer.emit('api.' + msg_type, response[msg_type]);
+					this.observer.emit('api.log', response);
+					this.observer.emit('api.' + msg_type, response[msg_type]);
 				}
 			},
 		}

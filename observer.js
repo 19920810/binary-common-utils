@@ -74,9 +74,10 @@ Observer.prototype = Object.create(null, {
 			});
 		}
 	},
-	destroy: {
-		value: function destroy(){
+	_destroy: {
+		value: function _destroy(){
 			this._eventActionMap = {};
+			delete Observer.instance;
 		}
 	}
 });
