@@ -3,7 +3,7 @@ var Observer = require('./observer');
 var LiveApi = require('binary-live-api').LiveApi;
 var _ = require('underscore');
 
-var CustomApi = function CustomApi(websocketMock) {
+var CustomApi = function CustomApi(websocketMock, onClose) {
 	var option = {};
 	this.observer = new Observer();
 	if ( typeof window !== 'undefined' ) {
@@ -13,12 +13,8 @@ var CustomApi = function CustomApi(websocketMock) {
 			appId: storageManager.get('appId'),
 		};
 	}
-	if ( typeof WebSocket === 'undefined' ) {
-		if ( websocketMock ) {
-			option.websocket = websocketMock;
-		} else {
-			option.websocket = require('ws');
-		}
+	if ( websocketMock ) {
+		option.websocket = websocketMock;
 	}
 	var events = {
 		tick: function(){},
@@ -46,6 +42,9 @@ var CustomApi = function CustomApi(websocketMock) {
 		},
 	};
 	var that = this;
+	if ( onClose ) {
+		LiveApi.prototype.onClose = onClose;
+	}
 	this._originalApi = new LiveApi(option);
 	Object.keys(events).forEach(function(e){
 		var _event = ((!that.events[e])? that.events._default: that.events[e]).bind(that);
