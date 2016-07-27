@@ -4,7 +4,12 @@ var storageManager = require('./storageManager');
 
 module.exports = {
 	addTokenIfValid: function addTokenIfValid(token, callback) {
-		var api = new CustomApi()._originalApi;
+		var api;
+		if ( typeof WebSocket === 'undefined' ) {
+			api = new CustomApi(require('ws'))._originalApi;
+		} else {
+			api = new CustomApi()._originalApi;
+		}
 		api.authorize(token)
 			.then(function (response) {
 				api.disconnect();
@@ -21,7 +26,12 @@ module.exports = {
 			});
 	},
 	logoutAllTokens: function logoutAllTokens(callback) {
-		var api = new CustomApi()._originalApi;
+		var api;
+		if ( typeof WebSocket === 'undefined' ) {
+			api = new CustomApi(require('ws'))._originalApi;
+		} else {
+			api = new CustomApi()._originalApi;
+		}
 		var tokenList = storageManager.getTokenList();
 		var token = tokenList[0].token;
 		api.authorize(token)

@@ -3,13 +3,14 @@
 var asyncChain = require('../tools').asyncChain;
 var CustomApi = require('../customApi');
 var expect = require('chai').expect;
+var ws = require('ws');
 var Observer = require('../observer');
 var observer = new Observer();
 
 describe('CustomApi', function() {
 	var api;
 	before(function(){
-		api = new CustomApi();
+		api = new CustomApi(ws);
 	});
 	describe('authorize', function(){
 		var message;
