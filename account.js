@@ -43,6 +43,13 @@ module.exports = {
 						callback();
 					}
 				});
+			}, function reject(response){
+				if ( response.error && response.error.code === 'InvalidToken' ) {
+					api.disconnect();
+					if ( callback ) {
+						callback();
+					}
+				}
 			});
 	}
 };
