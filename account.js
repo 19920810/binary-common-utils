@@ -46,6 +46,7 @@ module.exports = {
 			}, function reject(response){
 				if ( response.error && response.error.code === 'InvalidToken' ) {
 					api.disconnect();
+					storageManager.removeAllTokens();
 					if ( callback ) {
 						callback();
 					}
