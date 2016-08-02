@@ -23,7 +23,7 @@ describe('CustomApi', function() {
 			api.authorize('FakeToken');
 		});
 		it('authorize return invalid token', function() {
-			expect(message).to.have.property('code')
+			expect(message).to.have.deep.property('.error.code')
 				.that.be.equal('InvalidToken');
 		});
 	});
@@ -73,7 +73,7 @@ describe('CustomApi', function() {
 			.exec();
 		});
 		it('buy return InvalidContractProposal', function() {
-			expect(message).to.have.property('code')
+			expect(message).to.have.deep.property('.error.code')
 				.that.be.equal('InvalidContractProposal');
 		});
 	});
