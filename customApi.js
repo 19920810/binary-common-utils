@@ -5,6 +5,7 @@ var _ = require('underscore');
 
 var CustomApi = function CustomApi(websocketMock, onClose) {
 	var option = {};
+	this.requestMap = {};
 	this.observer = new Observer();
 	if ( typeof window !== 'undefined' ) {
 		var storageManager = require('./storageManager');
@@ -45,10 +46,25 @@ var CustomApi = function CustomApi(websocketMock, onClose) {
 	if ( onClose ) {
 		LiveApi.prototype.onClose = onClose;
 	}
+	LiveApi.prototype.sendRaw = function sendRaw(json){
+		that.requestMap[json.req_id] = json;
+		if (this.isReady()) {
+			this.socket.send(JSON.stringify(json));
+		} else {
+			this.bufferedSends.push(json);
+		}    
+		if (typeof json.req_id !== 'undefined') {
+			return this.generatePromiseForRequest(json);
+		}    
+	};
 	this._originalApi = new LiveApi(option);
 	Object.keys(events).forEach(function(e){
 		var _event = ((!that.events[e])? that.events._default: that.events[e]).bind(that);
 		that._originalApi.events.on(e, function(data){
+			if ( that.destroyed ) {
+				return;
+			}
+			data.echo_req = that.requestMap[data.req_id];
 			_event(data, e);
 		});
 		that[e] = function(){
@@ -106,12 +122,23 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 					this.observer.emit('api.authorize', response.authorize);
 				}
 			},
+			proposal: function _default(response, type) {
+				if ( !this.apiFailed(response, type) ) {
+					this.observer.emit('api.log', response);
+					this.observer.emit('api.proposal', _.extend(response.proposal, {contract_type: response.echo_req.contract_type}));
+				}
+			},
 			_default: function _default(response, type) {
 				if ( !this.apiFailed(response, type) ) {
 					this.observer.emit('api.log', response);
 					this.observer.emit('api.' + type, response[type]);
 				}
 			},
+		}
+	},
+	destroy: {
+		value: function destroy() {
+			this.destroyed = true;
 		}
 	}
 });
