@@ -1,14 +1,14 @@
 'use strict';
-var CustomApi = require('./customApi');
+var LiveApi = require('binary-live-api').LiveApi;
 var storageManager = require('./storageManager');
 
 module.exports = {
 	addTokenIfValid: function addTokenIfValid(token, callback) {
 		var api;
 		if ( typeof WebSocket === 'undefined' ) {
-			api = new CustomApi(require('ws'))._originalApi;
+			api = new LiveApi({websocket: require('ws')});
 		} else {
-			api = new CustomApi()._originalApi;
+			api = new LiveApi();
 		}
 		api.authorize(token)
 			.then(function (response) {
@@ -28,9 +28,9 @@ module.exports = {
 	logoutAllTokens: function logoutAllTokens(callback) {
 		var api;
 		if ( typeof WebSocket === 'undefined' ) {
-			api = new CustomApi(require('ws'))._originalApi;
+			api = new LiveApi({websocket: require('ws')});
 		} else {
-			api = new CustomApi()._originalApi;
+			api = new LiveApi();
 		}
 		var tokenList = storageManager.getTokenList();
 		var token = tokenList[0].token;

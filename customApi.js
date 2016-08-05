@@ -72,7 +72,7 @@ var CustomApi = function CustomApi(websocketMock, onClose) {
 			if ( promise instanceof Promise ) {
 				promise.then(function resolve(data){
 				}, function reject(data){
-					_event(data, e);
+					_event(data.error, e);
 				});
 			}
 		};
