@@ -35,6 +35,9 @@ module.exports = {
 		var tokenList = storageManager.getTokenList();
 		if ( tokenList.length === 0 ) {
 			storageManager.removeAllTokens();
+			if ( callback ) {
+				callback();
+			}
 			return;
 		}
 		var token = tokenList[0].token;
