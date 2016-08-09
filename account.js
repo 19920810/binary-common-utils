@@ -33,6 +33,10 @@ module.exports = {
 			api = new LiveApi();
 		}
 		var tokenList = storageManager.getTokenList();
+		if ( tokenList.length === 0 ) {
+			storageManager.removeAllTokens();
+			return;
+		}
 		var token = tokenList[0].token;
 		api.authorize(token)
 			.then(function (response) {

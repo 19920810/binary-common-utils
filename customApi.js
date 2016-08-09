@@ -19,6 +19,8 @@ var CustomApi = function CustomApi(websocketMock, onClose) {
 	}
 	var events = {
 		tick: function(){},
+		ohlc: function(){},
+		candles: function(){},
 		history: function(){
 			return this._originalApi.getTickHistory.apply(this._originalApi, Array.prototype.slice.call(arguments));
 		},
@@ -92,15 +94,41 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 	},
 	events: {
 		value: {
+			ohlc: function ohlc(response, type) {
+				if ( !this.apiFailed(response, type) ) {
+					var ohlc = response.ohlc;
+					this.observer.emit('api.ohlc', {
+						open: +ohlc.open,
+						high: +ohlc.high,
+						low: +ohlc.low,
+						close: +ohlc.close,
+						epoch: +ohlc.open_time,
+					});
+				}
+			},
+			candles: function candles(response, type) {
+				if ( !this.apiFailed(response, type) ) {
+					var candlesList = [];
+					var candles = response.candles;
+					candles.forEach(function (ohlc) {
+						candlesList.push({
+							open: +ohlc.open,
+							high: +ohlc.high,
+							low: +ohlc.low,
+							close: +ohlc.close,
+							epoch: +ohlc.epoch,
+						});
+					});
+					this.observer.emit('api.candles', candlesList);
+				}
+			},
 			tick: function tick(response, type) {
 				if ( !this.apiFailed(response, type) ) {
 					var tick = response.tick;
-					this.observer.emit('api.log', 'tick received at: ' + tick.epoch);
 					this.observer.emit('api.tick', {
 						epoch: +tick.epoch,
 						quote: +tick.quote,
 					});
-					this.observer.emit('api.log', tick);
 				}
 			},
 			history: function history(response, type) {
@@ -113,7 +141,6 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 							quote: +history.prices[index]
 						});
 					});
-					this.observer.emit('api.log', ticks);
 					this.observer.emit('api.history', ticks);
 				}
 			},
@@ -124,7 +151,6 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 			},
 			proposal: function _default(response, type) {
 				if ( !this.apiFailed(response, type) ) {
-					this.observer.emit('api.log', response);
 					this.observer.emit('api.proposal', _.extend(response.proposal, {contract_type: response.echo_req.contract_type}));
 				}
 			},
