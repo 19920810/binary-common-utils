@@ -41,23 +41,16 @@ module.exports = {
 			return;
 		}
 		var token = tokenList[0].token;
+		var logout = function logout(){
+			storageManager.removeAllTokens();
+			api.disconnect();
+			if ( callback ) {
+				callback();
+			}
+		};
 		api.authorize(token)
 			.then(function (response) {
-				storageManager.removeAllTokens();
-				api.logOut().then(function(){
-					api.disconnect();
-					if ( callback ) {
-						callback();
-					}
-				});
-			}, function reject(response){
-				if ( response.error && response.error.code === 'InvalidToken' ) {
-					api.disconnect();
-					storageManager.removeAllTokens();
-					if ( callback ) {
-						callback();
-					}
-				}
-			});
+				api.logOut().then(logout, logout);
+			}, logout);
 	}
 };
