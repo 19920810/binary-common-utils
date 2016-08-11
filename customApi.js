@@ -12,6 +12,7 @@ var CustomApi = function CustomApi(websocketMock, onClose) {
 		option = {
 			language: storageManager.get('lang'),
 			appId: storageManager.get('appId'),
+			keepAlive: true
 		};
 	}
 	if ( websocketMock ) {
