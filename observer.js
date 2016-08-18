@@ -8,8 +8,11 @@ var Observer = function Observer(){
 };
 Observer.prototype = Object.create(null, {
 	register: {
-		value: function register(_event, _action, once, unregisterIfError){
+		value: function register(_event, _action, once, unregisterIfError, unregisterAllBefore){
 			var that = this;
+			if ( unregisterAllBefore ) {
+				this.unregisterAll(_event);
+			}
 			var apiError = function apiError(error){
 				if ( error.type === unregisterIfError.type ) {
 					that.unregister('api.error', apiError);
@@ -63,6 +66,11 @@ Observer.prototype = Object.create(null, {
 					delete actionList[toDeleteIndexes[i]];
 				}
 			}
+		}
+	},
+	isRegistered: {
+		value: function isRegistered(_event){
+			return this._eventActionMap.hasOwnProperty(_event);
 		}
 	},
 	unregisterAll: {

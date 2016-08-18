@@ -5,7 +5,7 @@ var _ = require('underscore');
 
 var CustomApi = function CustomApi(websocketMock, onClose) {
 	var option = {};
-	this.requestMap = {};
+	this.proposalMap = {};
 	this.observer = new Observer();
 	if ( typeof window !== 'undefined' ) {
 		var storageManager = require('./storageManager');
@@ -51,7 +51,14 @@ var CustomApi = function CustomApi(websocketMock, onClose) {
 		LiveApi.prototype.onClose = onClose;
 	}
 	LiveApi.prototype.sendRaw = function sendRaw(json){
-		that.requestMap[json.req_id] = json;
+		if ( json.hasOwnProperty('proposal') ) {
+			for ( var key in that.proposalMap ) {
+				if ( that.proposalMap[key] === json.contract_type ) {
+					delete that.proposalMap[key];
+				}
+			}
+			that.proposalMap[json.req_id] = json.contract_type;
+		}
 		if (this.isReady()) {
 			this.socket.send(JSON.stringify(json));
 		} else {
@@ -68,7 +75,9 @@ var CustomApi = function CustomApi(websocketMock, onClose) {
 			if ( that.destroyed ) {
 				return;
 			}
-			data.echo_req = that.requestMap[data.req_id];
+			if ( data.msg_type === 'proposal' ) {
+				data.proposal.contract_type = that.proposalMap[data.req_id];
+			}
 			_event(data, e);
 		});
 		that[e] = function(){
@@ -149,11 +158,6 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 			authorize: function authorize(response, type) {
 				if ( !this.apiFailed(response, type) ) {
 					this.observer.emit('api.authorize', response.authorize);
-				}
-			},
-			proposal: function _default(response, type) {
-				if ( !this.apiFailed(response, type) ) {
-					this.observer.emit('api.proposal', _.extend(response.proposal, {contract_type: response.echo_req.contract_type}));
 				}
 			},
 			_default: function _default(response, type) {
