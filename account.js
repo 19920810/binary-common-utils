@@ -1,56 +1,35 @@
 'use strict';
-var LiveApi = require('binary-live-api').LiveApi;
-var storageManager = require('./storageManager');
+import {LiveApi} from 'binary-live-api';
+import storageManager from './storageManager';
 
-module.exports = {
-	addTokenIfValid: function addTokenIfValid(token, callback) {
-		var api;
-		if ( typeof WebSocket === 'undefined' ) {
-			api = new LiveApi({websocket: require('ws')});
-		} else {
-			api = new LiveApi();
-		}
-		api.authorize(token)
-			.then(function (response) {
-				api.disconnect();
-				storageManager.addToken(token, response.authorize.loginid, response.authorize.is_virtual);
-				if (callback) {
-					callback(null);
-				}
-			}, function (reason) {
-				api.disconnect();
-				storageManager.removeToken(token);
-				if (callback) {
-					callback('Error');
-				}
-			});
-	},
-	logoutAllTokens: function logoutAllTokens(callback) {
-		var api;
-		if ( typeof WebSocket === 'undefined' ) {
-			api = new LiveApi({websocket: require('ws')});
-		} else {
-			api = new LiveApi();
-		}
-		var tokenList = storageManager.getTokenList();
-		if ( tokenList.length === 0 ) {
-			storageManager.removeAllTokens();
-			if ( callback ) {
-				callback();
-			}
-			return;
-		}
-		var token = tokenList[0].token;
-		var logout = function logout(){
-			storageManager.removeAllTokens();
+export const addTokenIfValid = (token, callback = () => {}) => {
+	let option = ( typeof WebSocket === 'undefined' ) ? {websocket: require('ws')} : {},
+		api = new LiveApi(option);
+	api.authorize(token)
+		.then((response) => {
 			api.disconnect();
-			if ( callback ) {
-				callback();
-			}
-		};
-		api.authorize(token)
-			.then(function (response) {
-				api.logOut().then(logout, logout);
-			}, logout);
+			storageManager.addToken(token, response.authorize.loginid, response.authorize.is_virtual);
+			callback(null);
+		}, (reason) => {
+			api.disconnect();
+			storageManager.removeToken(token);
+			callback('Error');
+		});
+};
+
+export const logoutAllTokens = (callback) => {
+	let option = ( typeof WebSocket === 'undefined' ) ? {websocket: require('ws')} : {},
+		api = new LiveApi(option),
+		tokenList = storageManager.getTokenList();
+	let logout = () => {
+		storageManager.removeAllTokens();
+		api.disconnect();
+		callback();
+	};
+	if ( tokenList.length === 0 ) {
+		logout();
+	} else {
+		api.authorize(tokenList[0].token)
+			.then(() => { api.logOut().then(logout, logout); }, logout);
 	}
 };
