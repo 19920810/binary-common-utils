@@ -56,40 +56,12 @@ module.exports = {
 	getObjectValue: function getObjectValue(obj) {
 		return obj[Object.keys(obj)[0]];
 	},
-	getObjectKey: function getObjectKey(obj) {
-		return Object.keys(obj)[0];
-	},
 	getUTCTime: function getUTCTime(date) {
 		var dateObject = new Date(date);
 		return ('0' + dateObject.getUTCHours())
 		.slice(-2) + ':' + ('0' + dateObject.getUTCMinutes())
 		.slice(-2) + ':' + ('0' + dateObject.getUTCSeconds())
 		.slice(-2);
-	},
-	copyAttributeIfExists: function copyAttributeIfExists(obj1, obj2, name) {
-		if (obj2.hasOwnProperty(name)) {
-			obj1[name] = obj2[name];
-		}
-	},
-	createXmlFromMarket: function createXmlFromMarket(obj) {
-		var xmlStr = '<category name="Markets" colour="345" i18n-text="Markets">\n';
-		Object.keys(obj).forEach(function(market){
-			xmlStr += '\t<category name="'+ obj[market].name +'" colour="345">\n';
-			Object.keys(obj[market].submarkets).forEach(function(submarket){
-				xmlStr += '\t\t<category name="'+ obj[market].submarkets[submarket].name +'" colour="345">\n';
-				Object.keys(obj[market].submarkets[submarket].symbols).forEach(function(symbol){
-					xmlStr += '\t\t\t<block type="'+ symbol.toLowerCase() +'"/>\n';
-				});
-				xmlStr += '\t\t</category>\n';
-			});
-			xmlStr += '\t</category>\n';
-		});
-		xmlStr += '</category>';
-		return xmlStr;
-	},
-	xmlToStr: function xmlToStr(xml){
-		var serializer = new XMLSerializer(); 
-		return serializer.serializeToString(xml);
 	},
 	strToXml: function strToXml(str) {
 		var xmlDoc;
@@ -103,5 +75,31 @@ module.exports = {
 			xmlDoc.loadXML(str);
 		}
 		return xmlDoc;
+	},
+	expandDuration: function expandDuration(duration){
+		return duration.replace(/t/g, ' tick').replace(/s/g, ' second').replace(/m/g, ' minute').replace(/h/g, ' hour').replace(/d/g, ' day')+'(s)';
+	},
+	durationToSecond: function durationToSecond(duration){
+		var durationInt = parseInt(duration),
+			durationType = duration.replace(durationInt.toString(), '');
+		if ( durationType === 's' ){
+			return durationInt;
+		}
+		if ( durationType === 't' ){
+			return durationInt * 2;
+		}
+		if ( durationType === 'm' ){
+			return durationInt * 60;
+		}
+		if ( durationType === 'h' ){
+			return durationInt * 60 * 60;
+		}
+		if ( durationType === 'd' ){
+			return durationInt * 60 * 60 * 24;
+		}
+		throw({message: 'Duration type not accepted'});
+	},
+	durationAccepted: function durationAccepted(duration, min) {
+		return this.durationToSecond(duration) >= this.durationToSecond(min);
 	}
 };
