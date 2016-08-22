@@ -16,6 +16,7 @@
 		"Tourist": false,
 		"FileReader": false,
 		"DOMParser": false,
+		"localStorage": false,
 		"ActiveXObject": false
 	}
 }

@@ -1,6 +1,6 @@
 'use strict';
 import {LiveApi} from 'binary-live-api';
-import storageManager from './storageManager';
+import {addToken, removeToken, getTokenList, removeAllTokens} from './storageManager';
 
 export const addTokenIfValid = (token, callback = () => {}) => {
 	let option = ( typeof WebSocket === 'undefined' ) ? {websocket: require('ws')} : {},
@@ -8,11 +8,11 @@ export const addTokenIfValid = (token, callback = () => {}) => {
 	api.authorize(token)
 		.then((response) => {
 			api.disconnect();
-			storageManager.addToken(token, response.authorize.loginid, response.authorize.is_virtual);
+			addToken(token, response.authorize.loginid, response.authorize.is_virtual);
 			callback(null);
 		}, (reason) => {
 			api.disconnect();
-			storageManager.removeToken(token);
+			removeToken(token);
 			callback('Error');
 		});
 };
@@ -20,9 +20,9 @@ export const addTokenIfValid = (token, callback = () => {}) => {
 export const logoutAllTokens = (callback) => {
 	let option = ( typeof WebSocket === 'undefined' ) ? {websocket: require('ws')} : {},
 		api = new LiveApi(option),
-		tokenList = storageManager.getTokenList();
+		tokenList = getTokenList();
 	let logout = () => {
-		storageManager.removeAllTokens();
+		removeAllTokens();
 		api.disconnect();
 		callback();
 	};

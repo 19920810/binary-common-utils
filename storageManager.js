@@ -1,86 +1,77 @@
 'use strict';
-module.exports = {
-	getTokenList: function getTokenList() {
-		if (!localStorage.hasOwnProperty('tokenList')) {
-			localStorage.tokenList = '[]';
-		}
-		var tokenList;
-		try {
-			tokenList = JSON.parse(localStorage.tokenList);
-		} catch (e) {
-			localStorage.tokenList = '[]';
-			tokenList = [];
-		}
-		return tokenList;
-	},
-	setTokenList: function setTokenList(tokenList) {
-		localStorage.tokenList = JSON.stringify(tokenList);
-	},
-	findAccount: function findAccount(account_name) {
-		var tokenList = this.getTokenList();
-		var index = -1;
-		tokenList.forEach(function (tokenInfo, i) {
-			if (tokenInfo.account_name === account_name) {
-				index = i;
-			}
+
+export const getTokenList = () => {
+	localStorage.tokenList = (!localStorage.hasOwnProperty('tokenList')) ? '[]'
+		: localStorage.tokenList;
+	try {
+		return JSON.parse(localStorage.tokenList);
+	} catch (e) {
+		localStorage.tokenList = '[]';
+		return [];
+	}
+};
+
+export const setTokenList = (tokenList = []) => {
+	localStorage.tokenList = JSON.stringify(tokenList);
+};
+
+const findAccount = (account_name = '') => {
+	return getTokenList().findIndex((tokenInfo) => {
+		return tokenInfo.account_name === account_name;
+	});
+};
+
+export const findToken = (token = '') => {
+	return getTokenList().findIndex((tokenInfo) => {
+		return tokenInfo.token === token;
+	});
+};
+
+export const addToken = (token = '', account_name = '', isVirtual = '') => {
+	let tokenList = getTokenList();
+	let tokenIndex = findToken(token);
+	let accountIndex = findAccount(account_name);
+	if (tokenIndex < 0 && accountIndex < 0) {
+		tokenList.push({
+			account_name: account_name,
+			token: token,
+			isVirtual: isVirtual
 		});
-		return index;
-	},
-	addToken: function addToken(token, account_name, isVirtual) {
-		var tokenList = this.getTokenList();
-		var tokenIndex = this.findToken(token);
-		var accountIndex = this.findAccount(account_name);
-		if (tokenIndex < 0 && accountIndex < 0) {
-			tokenList.push({
-				account_name: account_name,
-				token: token,
-				isVirtual: isVirtual
-			});
-			this.setTokenList(tokenList);
-		}
-	},
-	findToken: function findToken(token) {
-		var tokenList = this.getTokenList();
-		var index = -1;
-		tokenList.forEach(function (tokenInfo, i) {
-			if (tokenInfo.token === token) {
-				index = i;
-			}
-		});
-		return index;
-	},
-	getToken: function getToken(token) {
-		var tokenList = this.getTokenList();
-		var index = this.findToken(token);
-		if (index >= 0) {
-			return tokenList[index];
-		}
-		return {};
-	},
-	removeToken: function removeToken(token) {
-		var tokenList = this.getTokenList();
-		var index = this.findToken(token);
-		if (index > -1) {
-			tokenList.splice(index, 1);
-			localStorage.tokenList = tokenList;
-		}
-	},
-	removeAllTokens: function removeAllTokens() {
-		delete localStorage.tokenList;
-	},
-	isDone: function isDone(varName) {
-		return localStorage.hasOwnProperty(varName);
-	},
-	setDone: function setDone(varName) {
-		localStorage[varName] = true;
-	},
-	setNotDone: function setNotDone(varName) {
-		delete localStorage[varName];
-	},
-	set: function set(varName, value) {
-		localStorage[varName] = value;
-	},
-	get: function get(varName) {
-		return localStorage[varName];
-	},
+		setTokenList(tokenList);
+	}
+};
+
+export const getToken = (token) => {
+	let tokenList = getTokenList();
+	let index = findToken(token);
+	return ( index >= 0 ) ? tokenList[index] : {};
+};
+
+export const removeToken = (token) => {
+	let index = findToken(token);
+	if ( index > -1) {
+		let tokenList = getTokenList();
+		tokenList.splice(index, 1);
+		localStorage.tokenList = tokenList;
+	}
+};
+
+export const removeAllTokens = () => {
+	delete localStorage.tokenList;
+};
+
+export const isDone = (varName) => {
+	return localStorage.hasOwnProperty(varName);
+};
+
+export const setDone = (varName) => {
+	localStorage[varName] = true;
+};
+
+export const set = (varName, value) => {
+	localStorage[varName] = value;
+};
+
+export const get = (varName) => {
+	return localStorage[varName];
 };

@@ -71,21 +71,5 @@ describe('StorageManager', function(){
 			storageManager.setDone('TokenTest');
 			expect(storageManager.isDone('TokenTest')).to.be.ok;
 		});
-		it('setNotDone should make it false again', function(){
-			storageManager.setNotDone('TokenTest');
-			expect(storageManager.isDone('TokenTest')).not.to.be.ok;
-		});
-		it('setNotDone should not make it true', function(){
-			storageManager.setNotDone('TokenTest');
-			expect(storageManager.isDone('TokenTest')).not.to.be.ok;
-		});
-		it('setDone a should not affect b', function(){
-			storageManager.setDone('a');
-			expect(storageManager.isDone('TokenTest')).not.to.be.ok;
-		});
-		it('setNotDone b should not affect a', function(){
-			storageManager.setNotDone('TokenTest');
-			expect(storageManager.isDone('a')).to.be.ok;
-		});
 	});
 });

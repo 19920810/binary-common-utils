@@ -1,17 +1,17 @@
 'use strict';
-var Observer = require('./observer');
-var LiveApi = require('binary-live-api').LiveApi;
-var _ = require('underscore');
+import Observer from './observer';
+import {LiveApi} from 'binary-live-api';
+import _ from 'underscore';
+import {get as getStorage} from './storageManager';
 
 var CustomApi = function CustomApi(websocketMock, onClose) {
 	var option = {};
 	this.proposalMap = {};
 	this.observer = new Observer();
 	if ( typeof window !== 'undefined' ) {
-		var storageManager = require('./storageManager');
 		option = {
-			language: storageManager.get('lang'),
-			appId: storageManager.get('appId'),
+			language: getStorage('lang'),
+			appId: getStorage('appId'),
 		};
 	}
 	if ( websocketMock ) {

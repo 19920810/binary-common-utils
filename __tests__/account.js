@@ -1,5 +1,4 @@
 'use strict';
-var storageManager = require('../storageManager');
 var account = require('../account');
 var expect = require('chai').expect;
 
