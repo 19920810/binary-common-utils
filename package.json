@@ -2,9 +2,18 @@
   "name": "binary-common-utils",
   "version": "1.6.0",
   "description": "Utilities that are used to develop binary.com apps",
-  "main": "index.js",
+  "main": "lib/index.js",
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "transform-async-to-generator",
+      "transform-function-bind"
+    ]
+  },
   "scripts": {
-    "test": "mocha --require ./mochaHelper.js ./__tests__/*.js",
+    "test": "./node_modules/.bin/_mocha --require ./src/mochaHelper.js --compilers js:babel-core/register ./src/__tests__/*.js",
     "publish-latest": "npm test && npm version from-git && npm publish"
   },
   "repository": {
@@ -18,11 +27,16 @@
   },
   "homepage": "https://github.com/aminmarashi/binary-common-utils#readme",
   "devDependencies": {
-    "binary-live-api": "20.5.0",
+    "babel-cli": "^6.11.4",
     "babel-core": "^6.13.2",
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
+    "babel-plugin-transform-function-bind": "^6.8.0",
     "babel-preset-es2015": "^6.13.2",
     "babel-register": "^6.11.6",
+    "binary-live-api": "20.5.0",
     "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
     "jsdom": "^9.4.1",
     "jsdom-global": "^2.0.0",
     "mocha": "^3.0.2",

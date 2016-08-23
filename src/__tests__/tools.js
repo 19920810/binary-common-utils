@@ -1,7 +1,6 @@
 'use strict';
+import {observer} from '../observer';
 var tools = require('../tools');
-var Observer = require('../observer');
-var observer = new Observer();
 var expect = require('chai').expect;
 
 describe('Misc Tools', function(){
@@ -55,8 +54,5 @@ describe('Misc Tools', function(){
 			var date = new Date('1990-01-01T01:11:10.000Z');
 			expect(tools.getUTCTime(date)).to.be.equal('01:11:10');
 		});
-	});
-	after(function(){
-		observer._destroy();
 	});
 });

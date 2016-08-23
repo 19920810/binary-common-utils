@@ -1,6 +1,5 @@
 'use strict';
-var Observer = require('../observer');
-var observer = new Observer();
+import {observer} from '../observer';
 var expect = require('chai').expect;
 
 describe('Observer', function(){
@@ -19,8 +18,5 @@ describe('Observer', function(){
 	it('observer should trigger the action defined for an event', function(){
 		expect(window.newVar).to.be.a('string')
 			.and.to.be.equal('Hello, thanks for defining me');
-	});
-	after(function(){
-		observer._destroy();
 	});
 });

@@ -1,5 +1,5 @@
 'use strict';
-import Observer from './observer';
+import {observer} from './observer';
 import {LiveApi} from 'binary-live-api';
 import _ from 'underscore';
 import {get as getStorage} from './storageManager';
@@ -7,7 +7,6 @@ import {get as getStorage} from './storageManager';
 var CustomApi = function CustomApi(websocketMock, onClose) {
 	var option = {};
 	this.proposalMap = {};
-	this.observer = new Observer();
 	if ( typeof window !== 'undefined' ) {
 		option = {
 			language: getStorage('lang'),
@@ -97,7 +96,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 		value: function apiFailed(response, type){
 			if (response.error) {
 				response.error.type = type;
-				this.observer.emit('api.error', response.error);
+				observer.emit('api.error', response.error);
 				return true;
 			}
 			return false;
@@ -108,7 +107,7 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 			ohlc: function ohlc(response, type) {
 				if ( !this.apiFailed(response, type) ) {
 					var ohlc = response.ohlc;
-					this.observer.emit('api.ohlc', {
+					observer.emit('api.ohlc', {
 						open: +ohlc.open,
 						high: +ohlc.high,
 						low: +ohlc.low,
@@ -130,13 +129,13 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 							epoch: +ohlc.epoch,
 						});
 					});
-					this.observer.emit('api.candles', candlesList);
+					observer.emit('api.candles', candlesList);
 				}
 			},
 			tick: function tick(response, type) {
 				if ( !this.apiFailed(response, type) ) {
 					var tick = response.tick;
-					this.observer.emit('api.tick', {
+					observer.emit('api.tick', {
 						epoch: +tick.epoch,
 						quote: +tick.quote,
 					});
@@ -152,18 +151,18 @@ CustomApi.prototype = Object.create(LiveApi.prototype, {
 							quote: +history.prices[index]
 						});
 					});
-					this.observer.emit('api.history', ticks);
+					observer.emit('api.history', ticks);
 				}
 			},
 			authorize: function authorize(response, type) {
 				if ( !this.apiFailed(response, type) ) {
-					this.observer.emit('api.authorize', response.authorize);
+					observer.emit('api.authorize', response.authorize);
 				}
 			},
 			_default: function _default(response, type) {
 				if ( !this.apiFailed(response, type) ) {
-					this.observer.emit('api.log', response);
-					this.observer.emit('api.' + type, response[type]);
+					observer.emit('api.log', response);
+					observer.emit('api.' + type, response[type]);
 				}
 			},
 		}

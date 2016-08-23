@@ -1,11 +1,10 @@
 'use strict';
 
+import {observer} from '../observer';
 var asyncChain = require('../tools').asyncChain;
 var CustomApi = require('../customApi');
 var expect = require('chai').expect;
 var ws = require('ws');
-var Observer = require('../observer');
-var observer = new Observer();
 
 describe('CustomApi', function() {
 	var api;
@@ -76,8 +75,5 @@ describe('CustomApi', function() {
 			expect(message).to.have.deep.property('.code')
 				.that.be.equal('InvalidContractProposal');
 		});
-	});
-	after(function(){
-		observer._destroy();
 	});
 });
