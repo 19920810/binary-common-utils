@@ -14,16 +14,19 @@ export const parseQueryString = () => {
 	);
 	return objURL;
 };
+
 export const getObjectValue = (obj) => {
 	return obj[Object.keys(obj)[0]];
 };
+
 export const getUTCTime = (date) => {
 	let dateObject = new Date(date);
 	return ('0' + dateObject.getUTCHours())
-	.slice(-2) + ':' + ('0' + dateObject.getUTCMinutes())
-	.slice(-2) + ':' + ('0' + dateObject.getUTCSeconds())
-	.slice(-2);
+		.slice(-2) + ':' + ('0' + dateObject.getUTCMinutes())
+		.slice(-2) + ':' + ('0' + dateObject.getUTCSeconds())
+		.slice(-2);
 };
+
 export const strToXml = (str) => {
 	let xmlDoc;
 	let parser;
@@ -37,9 +40,11 @@ export const strToXml = (str) => {
 	}
 	return xmlDoc;
 };
+
 export const expandDuration = (duration) => {
 	return duration.replace(/t/g, ' tick').replace(/s/g, ' second').replace(/m/g, ' minute').replace(/h/g, ' hour').replace(/d/g, ' day')+'(s)';
 };
+
 export const durationToSecond = (duration) => {
 	let durationInt = parseInt(duration),
 		durationType = duration.replace(durationInt.toString(), '');
@@ -60,6 +65,7 @@ export const durationToSecond = (duration) => {
 	}
 	throw({message: 'Duration type not accepted'});
 };
+
 export const durationAccepted = (duration, min) => {
 	return durationToSecond(duration) >= durationToSecond(min);
 };

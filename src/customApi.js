@@ -99,9 +99,11 @@ export default class CustomApi {
 			/*jshint loopfunc:false*/
 		}
 	}
+
 	history(...args) {
 		return this._originalApi.getTickHistory(...args);
 	}
+
 	proposal_open_contract(contract_id) {
 		return this._originalApi.send({
 			proposal_open_contract: 1,
@@ -109,18 +111,23 @@ export default class CustomApi {
 			subscribe: 1
 		});
 	}
+	
 	proposal(...args) {
 		return this._originalApi.subscribeToPriceForContractProposal(...args);
 	}
+	
 	buy(...args) {
 		return this._originalApi.buyContract(...args);
 	}
+
 	authorize(...args) {
 		return this._originalApi.authorize(...args);
 	}
+
 	balance(...args) {
 		return this._originalApi.subscribeToBalance(...args);
 	}
+
 	destroy() {
 		this.destroyed = true;
 	}
