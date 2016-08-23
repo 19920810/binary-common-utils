@@ -1,7 +1,6 @@
 'use strict';
 
 import {observer} from '../observer';
-import {asyncChain} from '../tools';
 import CustomApi from '../customApi';
 import {expect} from 'chai';
 import ws from 'ws';
@@ -15,10 +14,10 @@ describe('CustomApi', function() {
 		var message;
 		before(function(done){
 			this.timeout('5000');
-			observer.register('api.error', function(error) {
+			observer.register('api.error', true).then((error)=>{
 				message = error;
 				done();
-			}, true);
+			});
 			api.authorize('FakeToken');
 		});
 		it('authorize return invalid token', function() {
@@ -31,13 +30,13 @@ describe('CustomApi', function() {
 		var message2;
 		before(function(done){
 			this.timeout('5000');
-			observer.register('api.history', function(data) {
+			observer.register('api.history', true).then((data)=>{
 				message1 = data;
-			}, true);
-			observer.register('api.tick', function(data) {
+			});
+			observer.register('api.tick', true).then((data)=>{
 				message2 = data;
 				done();
-			}, true);
+			});
 			api.history('R_100', {
 				"end": "latest",
 				"count": 600,
@@ -55,21 +54,14 @@ describe('CustomApi', function() {
 		var message;
 		before(function(done){
 			this.timeout('5000');
-			asyncChain()
-			.pipe(function(chainDone){
-				observer.register('api.authorize', function(){
-					chainDone();
-				}, true);
-				api.authorize('c9A3gPFcqQtAQDW');
-			})
-			.pipe(function(chainDone){
-				observer.register('api.error', function(error) {
-					message = error;
-					done();
-				}, true);
+			api.authorize('c9A3gPFcqQtAQDW');
+			observer.register('api.authorize', true).then(() => {
 				api.buy('uw2mk7no3oktoRVVsB4Dz7TQnFfABuFDgO95dlxfMxRuPUsz', 100);
-			})
-			.exec();
+				return observer.register('api.error', true);
+			}).then((error)=>{
+				message = error;
+				done();
+			});
 		});
 		it('buy return InvalidContractProposal', function() {
 			expect(message).to.have.deep.property('.code')

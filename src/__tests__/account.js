@@ -1,6 +1,6 @@
 'use strict';
-var account = require('../account');
-var expect = require('chai').expect;
+import {addTokenIfValid} from '../account';
+import {expect} from 'chai';
 
 describe('Account', function(){
 	var callbackResult;
@@ -13,7 +13,7 @@ describe('Account', function(){
 				isVirtual: 1
 			}
 		];
-		account.addTokenIfValid('FakeToken', function(result){
+		addTokenIfValid('FakeToken', function(result){
 			callbackResult = result;
 			done();
 		});

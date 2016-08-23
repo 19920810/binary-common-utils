@@ -1,13 +1,13 @@
 'use strict';
 import {observer} from '../observer';
-var expect = require('chai').expect;
+import {expect} from 'chai';
 
 describe('Observer', function(){
 	before(function(done){
-		observer.register('global.createVar', function(obj){
+		observer.register('global.createVar', true).then((obj)=>{
 			window[obj.name] = obj.text;
 			done();
-		}, true);
+		});
 		setTimeout(function(){
 			observer.emit('global.createVar', {
 				name: 'newVar',

@@ -1,20 +1,20 @@
 'use strict';
-var storageManager = require('../storageManager');
-var expect = require('chai').expect;
+import {expect} from 'chai';
+import {removeAllTokens, getTokenList, getToken, findToken, removeToken, addToken, isDone, setDone} from '../storageManager';
 
 describe('StorageManager', function(){
 	before(function(){
-		storageManager.removeAllTokens();
+		removeAllTokens();
 	});
 	describe('token retrieve functions when there is no token', function(){
 		it('getTokenList', function(){
-			expect(storageManager.getTokenList()).to.be.empty;
+			expect(getTokenList()).to.be.empty;
 		});
 		it('getToken', function(){
-			expect(storageManager.getToken('faketoken')).to.be.empty;
+			expect(getToken('faketoken')).to.be.empty;
 		});
 		it('findToken', function(){
-			expect(storageManager.findToken('faketoken')).to.be.below(0);
+			expect(findToken('faketoken')).to.be.below(0);
 		});
 	});
 	describe('token save/retrieve mechanism', function(){
@@ -29,29 +29,29 @@ describe('StorageManager', function(){
 			]);
 		});
 		it('getTokenList should not be empty', function(){
-			expect(storageManager.getTokenList()).not.to.be.empty;
+			expect(getTokenList()).not.to.be.empty;
 		});
 		it('removeToken fake should not be able to remove real token', function(){
-			storageManager.removeToken('FakeToken');
-			expect(storageManager.getTokenList()).not.to.be.empty;
+			removeToken('FakeToken');
+			expect(getTokenList()).not.to.be.empty;
 		});
 		it('getToken should be get the real token', function(){
-			expect(storageManager.getToken('RealToken')).to.be.an('Object')
+			expect(getToken('RealToken')).to.be.an('Object')
 				.that.has.keys(['account_name', 'token', 'isVirtual']);
-			realToken = storageManager.getToken('RealToken');
+			realToken = getToken('RealToken');
 		});
 		it('removeToken real should be able to remove real token', function(){
-			storageManager.removeToken('RealToken');
-			expect(storageManager.getTokenList()).to.be.empty;
+			removeToken('RealToken');
+			expect(getTokenList()).to.be.empty;
 		});
 		it('addToken should be able to add real token and findToken should find it', function(){
-			storageManager.getTokenList(realToken.token, realToken.account_name, 0);
-			expect(storageManager.findToken('RealToken')).not.to.be.empty;
+			getTokenList(realToken.token, realToken.account_name, 0);
+			expect(findToken('RealToken')).not.to.be.empty;
 		});
 		it('addToken should be able to add real token and findToken should find it', function(){
-			storageManager.addToken(realToken.token, realToken.account_name, 0);
-			var tokenList = storageManager.getTokenList();
-			expect(tokenList[storageManager.findToken('RealToken')])
+			addToken(realToken.token, realToken.account_name, 0);
+			var tokenList = getTokenList();
+			expect(tokenList[findToken('RealToken')])
 				.to.be.deep.equal({
 					account_name: 'Real Account',
 					token: 'RealToken',
@@ -59,17 +59,17 @@ describe('StorageManager', function(){
 				});
 		});
 		it('removeAllTokens should remove all tokens and getToken should be empty', function(){
-			storageManager.removeAllTokens();
-			expect(storageManager.getToken('RealToken')).to.be.empty;
+			removeAllTokens();
+			expect(getToken('RealToken')).to.be.empty;
 		});
 	});
 	describe('isDone functions', function(){
 		it('isDone should be false at the beginning', function(){
-			expect(storageManager.isDone('TokenTest')).not.to.be.ok;
+			expect(isDone('TokenTest')).not.to.be.ok;
 		});
 		it('setDone should make it true', function(){
-			storageManager.setDone('TokenTest');
-			expect(storageManager.isDone('TokenTest')).to.be.ok;
+			setDone('TokenTest');
+			expect(isDone('TokenTest')).to.be.ok;
 		});
 	});
 });

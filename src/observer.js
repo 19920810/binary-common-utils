@@ -3,7 +3,7 @@ class Observer {
 	constructor() {
 		this._eventActionMap = {};
 	}
-	register(_event, _action, once, unregisterIfError, unregisterAllBefore) {
+	register(_event, once, unregisterIfError, unregisterAllBefore) {
 		if ( unregisterAllBefore ) {
 			this.unregisterAll(_event);
 		}
@@ -22,27 +22,20 @@ class Observer {
 		if ( unregisterIfError ) {
 			this.register('api.error', apiError);
 		}
-		let action = (...args) => {
+		return new Promise((resolve, reject) => {
 			if ( once ) {
-				this.unregister(_event, _action);
+				this.unregister(_event, resolve);
 			}
 			if ( unregisterIfError ) {
 				this.unregister('api.error', apiError);
 			}
-			_action(...args);
-		};
-		let actionList = this._eventActionMap[_event];
-		if ( actionList ) {
-			actionList.push({
-				action: action,
-				searchBy: _action
-			});
-		} else {
-			this._eventActionMap[_event] = [{
-				action: action,
-				searchBy: _action
-			}];
-		}
+			let actionList = this._eventActionMap[_event];
+			if ( actionList ) {
+				actionList.push(resolve);
+			} else {
+				this._eventActionMap[_event] = [resolve];
+			}
+		});
 	}
 	unregister(_event, _function) {
 		let actionList = this._eventActionMap[_event];
@@ -59,14 +52,11 @@ class Observer {
 		delete this._eventActionMap[_event];
 	}
 	emit(_event, data) {
-		return new Promise((resolve, reject) => {
-			if (this._eventActionMap.hasOwnProperty(_event)){
-				this._eventActionMap[_event].forEach((action) => {
-					action.action(data);
-				});
-				resolve();
-			}
-		});
+		if (this._eventActionMap.hasOwnProperty(_event)){
+			this._eventActionMap[_event].forEach((action) => {
+				action(data);
+			});
+		}
 	}
 }
 
