@@ -1,10 +1,10 @@
 'use strict';
 
 import {observer} from '../observer';
-var asyncChain = require('../tools').asyncChain;
-var CustomApi = require('../customApi');
-var expect = require('chai').expect;
-var ws = require('ws');
+import {asyncChain} from '../tools';
+import CustomApi from '../customApi';
+import {expect} from 'chai';
+import ws from 'ws';
 
 describe('CustomApi', function() {
 	var api;

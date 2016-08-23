@@ -4,174 +4,125 @@ import {LiveApi} from 'binary-live-api';
 import _ from 'underscore';
 import {get as getStorage} from './storageManager';
 
-var CustomApi = function CustomApi(websocketMock, onClose) {
-	var option = {};
-	this.proposalMap = {};
-	if ( typeof window !== 'undefined' ) {
-		option = {
-			language: getStorage('lang'),
-			appId: getStorage('appId'),
-		};
-	}
-	if ( websocketMock ) {
-		option.websocket = websocketMock;
-	} else {
-		option.keepAlive = true;
-	}
-	var events = {
-		tick: function(){},
-		ohlc: function(){},
-		candles: function(){},
-		history: function(){
-			return this._originalApi.getTickHistory.apply(this._originalApi, Array.prototype.slice.call(arguments));
-		},
-		proposal_open_contract: function(contract_id){
-			return this._originalApi.send({
-				proposal_open_contract: 1,
-				contract_id: contract_id,
-				subscribe: 1
-			});
-		},
-		proposal: function(){
-			return this._originalApi.subscribeToPriceForContractProposal.apply(this._originalApi, Array.prototype.slice.call(arguments));
-		},
-		buy: function(){
-			return this._originalApi.buyContract.apply(this._originalApi, Array.prototype.slice.call(arguments));
-		},
-		authorize: function(){
-			return this._originalApi.authorize.apply(this._originalApi, Array.prototype.slice.call(arguments));
-		},
-		balance: function(){
-			return this._originalApi.subscribeToBalance.apply(this._originalApi, Array.prototype.slice.call(arguments));
-		},
-	};
-	var that = this;
-	if ( onClose ) {
-		LiveApi.prototype.onClose = onClose;
-	}
-	LiveApi.prototype.sendRaw = function sendRaw(json){
-		if ( json.hasOwnProperty('proposal') ) {
-			for ( var key in that.proposalMap ) {
-				if ( that.proposalMap[key] === json.contract_type ) {
-					delete that.proposalMap[key];
-				}
-			}
-			that.proposalMap[json.req_id] = json.contract_type;
+export default class CustomApi {
+	constructor(websocketMock, onClose) {
+		this.option = {};
+		this.proposalMap = {};
+		if ( typeof window !== 'undefined' ) {
+			this.option = {
+				language: getStorage('lang'),
+				appId: getStorage('appId'),
+			};
 		}
-		if (this.isReady()) {
-			this.socket.send(JSON.stringify(json));
+		if ( websocketMock ) {
+			this.option.websocket = websocketMock;
 		} else {
-			this.bufferedSends.push(json);
-		}    
-		if (typeof json.req_id !== 'undefined') {
-			return this.generatePromiseForRequest(json);
-		}    
-	};
-	this._originalApi = new LiveApi(option);
-	Object.keys(events).forEach(function(e){
-		var _event = ((!that.events[e])? that.events._default: that.events[e]).bind(that);
-		that._originalApi.events.on(e, function(data){
-			if ( that.destroyed ) {
-				return;
-			}
-			if ( data.msg_type === 'proposal' ) {
-				data.proposal.contract_type = that.proposalMap[data.req_id];
-			}
-			_event(data, e);
-		});
-		that[e] = function(){
-			var promise = events[e].apply(that, Array.prototype.slice.call(arguments));
-			if ( promise instanceof Promise ) {
-				promise.then(function resolve(data){
-				}, function reject(data){
-					_event(data.error, e);
-				});
-			}
-		};
-	});
-};
-
-CustomApi.prototype = Object.create(LiveApi.prototype, {
-	apiFailed:{
-		value: function apiFailed(response, type){
-			if (response.error) {
-				response.error.type = type;
-				observer.emit('api.error', response.error);
-				return true;
-			}
-			return false;
+			this.option.keepAlive = true;
 		}
-	},
-	events: {
-		value: {
-			ohlc: function ohlc(response, type) {
-				if ( !this.apiFailed(response, type) ) {
-					var ohlc = response.ohlc;
-					observer.emit('api.ohlc', {
+		LiveApi.prototype.onClose = (onClose) ? onClose : LiveApi.prototype.onClose;
+		let sendRawBackup = LiveApi.prototype.sendRaw;
+		LiveApi.prototype.sendRaw = (json) => {
+			if ( json.hasOwnProperty('proposal') ) {
+				for ( let key in this.proposalMap ) {
+					if ( this.proposalMap[key] === json.contract_type ) {
+						delete this.proposalMap[key];
+					}
+				}
+				this.proposalMap[json.req_id] = json.contract_type;
+			}
+			this._originalSendRaw(json);
+		};
+		this._originalApi = new LiveApi(this.option);
+		this._originalSendRaw = sendRawBackup.bind(this._originalApi);
+		this.transformers = {
+			ohlc: (response, type) => {
+				let ohlc = response.ohlc;
+				observer.emit('api.ohlc', {
+					open: +ohlc.open,
+					high: +ohlc.high,
+					low: +ohlc.low,
+					close: +ohlc.close,
+					epoch: +ohlc.open_time,
+				});
+			},
+			candles: (response, type) => {
+				let candlesList = [];
+				for ( let ohlc of response.candles ) {
+					candlesList.push({
 						open: +ohlc.open,
 						high: +ohlc.high,
 						low: +ohlc.low,
 						close: +ohlc.close,
-						epoch: +ohlc.open_time,
+						epoch: +ohlc.epoch,
 					});
 				}
+				observer.emit('api.candles', candlesList);
 			},
-			candles: function candles(response, type) {
-				if ( !this.apiFailed(response, type) ) {
-					var candlesList = [];
-					var candles = response.candles;
-					candles.forEach(function (ohlc) {
-						candlesList.push({
-							open: +ohlc.open,
-							high: +ohlc.high,
-							low: +ohlc.low,
-							close: +ohlc.close,
-							epoch: +ohlc.epoch,
-						});
+			tick: (response, type) => {
+				let tick = response.tick;
+				observer.emit('api.tick', {
+					epoch: +tick.epoch,
+					quote: +tick.quote,
+				});
+			},
+			history: (response, type) => {
+				let ticks = [];
+				let history = response.history;
+				history.times.forEach(function (time, index) {
+					ticks.push({
+						epoch: +time,
+						quote: +history.prices[index]
 					});
-					observer.emit('api.candles', candlesList);
-				}
+				});
+				observer.emit('api.history', ticks);
 			},
-			tick: function tick(response, type) {
-				if ( !this.apiFailed(response, type) ) {
-					var tick = response.tick;
-					observer.emit('api.tick', {
-						epoch: +tick.epoch,
-						quote: +tick.quote,
-					});
-				}
+			error: (response, type) => {
+				response.error.type = type;
+				observer.emit('api.error', response.error);
 			},
-			history: function history(response, type) {
-				if ( !this.apiFailed(response, type) ) {
-					var ticks = [];
-					var history = response.history;
-					history.times.forEach(function (time, index) {
-						ticks.push({
-							epoch: +time,
-							quote: +history.prices[index]
-						});
-					});
-					observer.emit('api.history', ticks);
+			_default: (response, type) => {
+				observer.emit('api.' + type, response[type]);
+			}
+		};
+		for ( let e of [ 'error', 'tick', 'ohlc', 'candles', 'history', 'proposal_open_contract', 'proposal', 'buy', 'authorize', 'balance' ] ) {
+			/*jshint loopfunc:true*/
+			let _event = (!this.transformers[e])? this.transformers._default: this.transformers[e];
+			this._originalApi.events.on(e, (data) => {
+				if ( this.destroyed ) {
+					return;
 				}
-			},
-			authorize: function authorize(response, type) {
-				if ( !this.apiFailed(response, type) ) {
-					observer.emit('api.authorize', response.authorize);
+				if ( data.msg_type === 'proposal' ) {
+					data.proposal.contract_type = this.proposalMap[data.req_id];
 				}
-			},
-			_default: function _default(response, type) {
-				if ( !this.apiFailed(response, type) ) {
-					observer.emit('api.log', response);
-					observer.emit('api.' + type, response[type]);
-				}
-			},
-		}
-	},
-	destroy: {
-		value: function destroy() {
-			this.destroyed = true;
+				_event(data, e);
+			});
+			/*jshint loopfunc:false*/
 		}
 	}
-});
+	history(...args) {
+		return this._originalApi.getTickHistory(...args);
+	}
+	proposal_open_contract(contract_id) {
+		return this._originalApi.send({
+			proposal_open_contract: 1,
+			contract_id: contract_id,
+			subscribe: 1
+		});
+	}
+	proposal(...args) {
+		return this._originalApi.subscribeToPriceForContractProposal(...args);
+	}
+	buy(...args) {
+		return this._originalApi.buyContract(...args);
+	}
+	authorize(...args) {
+		return this._originalApi.authorize(...args);
+	}
+	balance(...args) {
+		return this._originalApi.subscribeToBalance(...args);
+	}
+	destroy() {
+		this.destroyed = true;
+	}
+}
 
-module.exports = CustomApi;
