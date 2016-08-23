@@ -8,7 +8,7 @@ export const parseQueryString = () => {
 	let objURL = {};
 	str.replace(
 		new RegExp("([^?=&]+)(=([^&]*))?", "g"),
-		function (_0, _1, _2, _3) {
+		(_0, _1, _2, _3) => {
 			objURL[_1] = _3;
 		}
 	);

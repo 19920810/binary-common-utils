@@ -7,12 +7,12 @@ import ws from 'ws';
 
 describe('CustomApi', function() {
 	let api;
-	before(function(){
+	before(() => {
 		api = new CustomApi(ws);
 	});
-	describe('authorize', function(){
+	describe('authorize', () => {
 		let message;
-		before(function(done){
+		before(function(done) {
 			this.timeout('5000');
 			observer.register('api.error', true).then((error)=>{
 				message = error;
@@ -25,10 +25,10 @@ describe('CustomApi', function() {
 				.that.be.equal('InvalidToken');
 		});
 	});
-	describe('history', function(){
+	describe('history', () => {
 		let message1;
 		let message2;
-		before(function(done){
+		before(function(done) {
 			this.timeout('5000');
 			observer.register('api.history', true).then((data)=>{
 				message1 = data;
@@ -50,9 +50,9 @@ describe('CustomApi', function() {
 			expect(message2).to.have.all.keys(['epoch', 'quote']);
 		});
 	});
-	describe('buy', function(){
+	describe('buy', () => {
 		let message;
-		before(function(done){
+		before(function(done) {
 			this.timeout('5000');
 			api.authorize('c9A3gPFcqQtAQDW');
 			observer.register('api.authorize', true).then(() => {

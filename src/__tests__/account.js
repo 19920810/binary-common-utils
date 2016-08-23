@@ -2,9 +2,9 @@
 import {addTokenIfValid} from '../account';
 import {expect} from 'chai';
 
-describe('Account', function(){
+describe('Account', () => {
 	let callbackResult;
-	before(function(done){
+	before(function(done) {
 		this.timeout('3000');
 		localStorage.tokenList = [
 			{
@@ -13,12 +13,12 @@ describe('Account', function(){
 				isVirtual: 1
 			}
 		];
-		addTokenIfValid('FakeToken', function(result){
+		addTokenIfValid('FakeToken', (result) => {
 			callbackResult = result;
 			done();
 		});
 	});
-	it('callback result should be error', function(){
+	it('callback result should be error', () => {
 		expect(callbackResult).to.be.a('string')
 			.and.to.be.equal('Error');
 	});

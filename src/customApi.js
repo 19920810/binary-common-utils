@@ -68,7 +68,7 @@ export default class CustomApi {
 			history: (response, type) => {
 				let ticks = [];
 				let history = response.history;
-				history.times.forEach(function (time, index) {
+				history.times.forEach((time, index) => {
 					ticks.push({
 						epoch: +time,
 						quote: +history.prices[index]

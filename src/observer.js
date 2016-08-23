@@ -10,7 +10,7 @@ class Observer {
 		let apiError = (error) => {
 			if ( error.type === unregisterIfError.type ) {
 				this.unregister('api.error', apiError);
-				unregisterIfError.unregister.forEach(function(unregister){
+				unregisterIfError.unregister.forEach((unregister) => {
 					if ( unregister instanceof Array ) {
 						this.unregister(...unregister);
 					} else {
