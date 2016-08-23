@@ -3,7 +3,7 @@ import {addTokenIfValid} from '../account';
 import {expect} from 'chai';
 
 describe('Account', function(){
-	var callbackResult;
+	let callbackResult;
 	before(function(done){
 		this.timeout('3000');
 		localStorage.tokenList = [

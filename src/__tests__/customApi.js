@@ -6,12 +6,12 @@ import {expect} from 'chai';
 import ws from 'ws';
 
 describe('CustomApi', function() {
-	var api;
+	let api;
 	before(function(){
 		api = new CustomApi(ws);
 	});
 	describe('authorize', function(){
-		var message;
+		let message;
 		before(function(done){
 			this.timeout('5000');
 			observer.register('api.error', true).then((error)=>{
@@ -26,8 +26,8 @@ describe('CustomApi', function() {
 		});
 	});
 	describe('history', function(){
-		var message1;
-		var message2;
+		let message1;
+		let message2;
 		before(function(done){
 			this.timeout('5000');
 			observer.register('api.history', true).then((data)=>{
@@ -51,7 +51,7 @@ describe('CustomApi', function() {
 		});
 	});
 	describe('buy', function(){
-		var message;
+		let message;
 		before(function(done){
 			this.timeout('5000');
 			api.authorize('c9A3gPFcqQtAQDW');

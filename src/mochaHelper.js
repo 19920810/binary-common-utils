@@ -3,6 +3,6 @@ require('babel-polyfill');
 require('babel-register');
 require('jsdom-global')();
 global.localStorage = {};
-var xmldom = require('xmldom');
+let xmldom = require('xmldom');
 global.XMLSerializer = xmldom.XMLSerializer;
 global.DOMParser = xmldom.DOMParser;

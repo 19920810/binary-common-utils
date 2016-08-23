@@ -5,7 +5,7 @@ import {parseQueryString, getObjectValue, getUTCTime} from '../tools';
 
 describe('Misc Tools', function(){
 	describe('parseQueryString function', function(){
-		var queryString;
+		let queryString;
 		before(function(){
 			window.location.search = '?';
 			queryString = parseQueryString();
@@ -16,13 +16,13 @@ describe('Misc Tools', function(){
 	});
 	describe('getObjectValue', function(){
 		it('getObjectValue gets the value of an object with one attribute', function(){
-			var obj = {key: 'value'};
+			let obj = {key: 'value'};
 			expect(getObjectValue(obj)).to.be.equal('value');
 		});
 	});
 	describe('getUTCTime', function(){
 		it('getUTCTime gets the current UTC time with format HH:MM:SS', function(){
-			var date = new Date('1990-01-01T01:11:10.000Z');
+			let date = new Date('1990-01-01T01:11:10.000Z');
 			expect(getUTCTime(date)).to.be.equal('01:11:10');
 		});
 	});

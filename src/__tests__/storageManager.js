@@ -18,7 +18,7 @@ describe('StorageManager', function(){
 		});
 	});
 	describe('token save/retrieve mechanism', function(){
-		var realToken;
+		let realToken;
 		before(function(){
 			localStorage.tokenList = JSON.stringify([
 				{
@@ -50,7 +50,7 @@ describe('StorageManager', function(){
 		});
 		it('addToken should be able to add real token and findToken should find it', function(){
 			addToken(realToken.token, realToken.account_name, 0);
-			var tokenList = getTokenList();
+			let tokenList = getTokenList();
 			expect(tokenList[findToken('RealToken')])
 				.to.be.deep.equal({
 					account_name: 'Real Account',
