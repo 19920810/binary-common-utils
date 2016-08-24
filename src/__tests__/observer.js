@@ -4,8 +4,8 @@ import {expect} from 'chai';
 
 describe('Observer', () => {
 	before(function(done) {
-		observer.register('global.createVar', true).then((obj)=>{
-			window[obj.name] = obj.text;
+		observer.register('global.createVar').then((resp)=>{
+			window[resp.data.name] = resp.data.text;
 			done();
 		});
 		setTimeout(() => {
