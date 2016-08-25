@@ -1,4 +1,4 @@
-class Observer {
+export default class Observer {
   constructor() {
     this.eventActionMap = {};
   }
@@ -82,5 +82,5 @@ class Observer {
   }
 }
 
-export const observer = new Observer(); // eslint-disable-line
+export const observer = new Observer();
 
