@@ -35,14 +35,16 @@ class Observer {
       }
     });
   }
-  unregister(event, _function) {
-    if (!_function) {
+  unregister(event, func) {
+    if (!func) {
       return;
     }
     let actionList = this.eventActionMap[event];
     for (let i of Object.keys(actionList)) {
-      if (actionList[i].searchBy === _function) {
+      if (actionList[i] === func) {
+        func({});
         actionList.splice(i, 1);
+        return;
       }
     }
   }
@@ -50,7 +52,22 @@ class Observer {
     return event in this.eventActionMap;
   }
   unregisterAll(event) {
+    for (let action of this.eventActionMap[event]) {
+      action({});
+    }
     delete this.eventActionMap[event];
+  }
+  async keepAlive(initPromise, funcCall) {
+    let promise = initPromise;
+    let forever = true;
+    while (forever) {
+      let res = await promise;
+      funcCall(res.data);
+      if (!res.next) {
+        return;
+      }
+      promise = res.next;
+    }
   }
   emit(event, data) {
     if (event in this.eventActionMap) {
@@ -65,5 +82,5 @@ class Observer {
   }
 }
 
-export const observer = new Observer();
-// eslint-disable-line
+export const observer = new Observer(); // eslint-disable-line
+
