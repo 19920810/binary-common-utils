@@ -3,7 +3,7 @@ import { observer } from './observer';
 import { get as getStorage } from './storageManager';
 
 export default class CustomApi extends LiveApi {
-  constructor(websocketMock, onClose) {
+  constructor(websocketMock = null, overrideOnClose = null) {
     let option = {};
     if (typeof window !== 'undefined') {
       option = {
@@ -16,22 +16,8 @@ export default class CustomApi extends LiveApi {
     } else {
       option.keepAlive = true;
     }
-    super();
-    if (onClose) {
-      super.onClose = onClose;
-    }
-    let sendRawBackup = LiveApi.prototype.sendRaw;
-    super.sendRaw = (json) => {
-      if ('proposal' in json) {
-        for (let key of Object.keys(this.proposalMap)) {
-          if (this.proposalMap[key] === json.contract_type) {
-            delete this.proposalMap[key];
-          }
-        }
-        this.proposalMap[json.req_id] = json.contract_type;
-      }
-      sendRawBackup.call(this, json);
-    };
+    super(option);
+		this.overrideOnClose = overrideOnClose;
     this.proposalMap = {};
     this.transformers = {
       ohlc: (response) => {
@@ -127,6 +113,26 @@ export default class CustomApi extends LiveApi {
   balance(...args) {
     return this.subscribeToBalance(...args);
   }
+
+  onClose(...args) {
+    if (this.overrideOnClose) {
+      this.overrideOnClose(...args);
+    } else {
+      super.onClose(...args);
+    }
+  }
+
+	sendRaw(json) {
+		if ('proposal' in json) {
+			for (let key of Object.keys(this.proposalMap)) {
+				if (this.proposalMap[key] === json.contract_type) {
+					delete this.proposalMap[key];
+				}
+			}
+			this.proposalMap[json.req_id] = json.contract_type;
+		}
+		super.sendRaw(json);
+	}
 
   destroy() {
     this.destroyed = true;
