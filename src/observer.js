@@ -57,30 +57,26 @@ export default class Observer {
     }
     delete this.eventActionMap[event];
   }
-  async keepAlive(initPromise, funcCall) {
-    let promise = initPromise;
-    let forever = true;
-    while (forever) {
-      let res = await promise;
-      funcCall(res.data);
-      if (!res.next) {
-        return;
-      }
-      promise = res.next;
+  async keepAlive(promise, funcCall) {
+    let res = await promise;
+    if (!res.next) {
+      return;
     }
+    funcCall(res.data);
+    await this.keepAlive(res.next, funcCall);
   }
   emit(event, data) {
     if (event in this.eventActionMap) {
-      this.eventActionMap[event].forEach((action, i) => {
-        delete this.eventActionMap[event][i];
+      let tmp = this.eventActionMap[event];
+      this.eventActionMap[event] = [];
+      for (let action of tmp) {
         action({
           data,
           next: this.makePromiseForEvent(event),
         });
-      });
+      }
     }
   }
 }
 
 export const observer = new Observer();
-
