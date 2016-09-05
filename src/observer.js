@@ -2,80 +2,69 @@ export default class Observer {
   constructor() {
     this.eventActionMap = {};
   }
-  register(event, unregisterIfError, unregisterAllBefore) {
+  register(event, _action, once, unregisterIfError, unregisterAllBefore) {
     if (unregisterAllBefore) {
       this.unregisterAll(event);
     }
-    let apiError = null;
-    if (unregisterIfError) {
-      apiError = (error) => {
-        if (error.type === unregisterIfError.type) {
-          this.unregister('api.error', apiError);
-          unregisterIfError.unregister.forEach((unregister) => {
-            if (unregister instanceof Array) {
-              this.unregister(...unregister);
-            } else {
-              this.unregisterAll(unregister);
-            }
-          });
+    let apiError = (error) => {
+      if (error.type === unregisterIfError.type) {
+        this.unregister('api.error', apiError);
+        for (let unreg of unregisterIfError.unregister) {
+          if (unreg instanceof Array) {
+            this.unregister(...unreg);
+          } else {
+            this.unregisterAll(unreg);
+          }
         }
-      };
+      }
+    };
+    if (unregisterIfError) {
       this.register('api.error', apiError);
     }
-    return this.makePromiseForEvent(event, apiError);
-  }
-  makePromiseForEvent(event, apiError) {
-    return new Promise((resolve) => {
-      this.unregister('api.error', apiError);
-      let actionList = this.eventActionMap[event];
-      if (actionList) {
-        actionList.push(resolve);
-      } else {
-        this.eventActionMap[event] = [resolve];
+    let action = (...args) => {
+      if (once) {
+        this.unregister(event, _action);
       }
-    });
-  }
-  unregister(event, func) {
-    if (!func) {
-      return;
-    }
+      if (unregisterIfError) {
+        this.unregister('api.error', apiError);
+      }
+      _action(...args);
+    };
     let actionList = this.eventActionMap[event];
-    for (let i of Object.keys(actionList)) {
-      if (actionList[i] === func) {
-        func({});
-        actionList.splice(i, 1);
-        return;
-      }
+    if (actionList) {
+      actionList.push({
+        action,
+        searchBy: _action,
+      });
+    } else {
+      this.eventActionMap[event] = [{
+        action,
+        searchBy: _action,
+      }];
+    }
+  }
+  unregister(event, _function) {
+    let actionList = this.eventActionMap[event];
+    let i = actionList.findIndex((r) => r.searchBy === _function);
+    if (i >= 0) {
+      actionList.splice(i, 1);
     }
   }
   isRegistered(event) {
     return event in this.eventActionMap;
   }
   unregisterAll(event) {
-    for (let action of this.eventActionMap[event]) {
-      action({});
-    }
     delete this.eventActionMap[event];
   }
-  async keepAlive(promise, funcCall) {
-    let res = await promise;
-    if (!res.next) {
-      return;
-    }
-    funcCall(res.data);
-    await this.keepAlive(res.next, funcCall);
-  }
   emit(event, data) {
-    if (event in this.eventActionMap) {
-      let tmp = this.eventActionMap[event];
-      this.eventActionMap[event] = [];
-      for (let action of tmp) {
-        action({
-          data,
-          next: this.makePromiseForEvent(event),
-        });
+    return new Promise((resolve) => {
+      if (event in this.eventActionMap) {
+				for (let action of this.eventActionMap[event]) {
+          action.action(data);
+				}
+        resolve();
       }
-    }
+    });
   }
 }
 
