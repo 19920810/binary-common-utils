@@ -1,7 +1,7 @@
+import { expect } from 'chai'; // eslint-disable-line import/no-extraneous-dependencies
+import ws from 'ws'; // eslint-disable-line import/no-extraneous-dependencies
 import { observer } from '../observer';
-import CustomApi from '../customApi';
-import { expect } from 'chai';
-import ws from 'ws';
+import CustomApi from '../customApi.js';
 
 describe('CustomApi', () => {
   let api;
@@ -10,12 +10,12 @@ describe('CustomApi', () => {
   });
   describe('authorize', () => {
     let message;
-    before(function (done) {
+    before(function beforeall(done) {
       this.timeout('5000');
-      observer.register('api.error').then((resp) => {
-        message = resp.data;
+      observer.register('api.error', (error) => {
+        message = error;
         done();
-      });
+      }, true);
       api.authorize('FakeToken');
     });
     it('authorize return invalid token', () => {
@@ -26,19 +26,19 @@ describe('CustomApi', () => {
   describe('history', () => {
     let message1;
     let message2;
-    before(function (done) {
+    before(function beforeAll(done) {
       this.timeout('5000');
-      observer.register('api.history').then((resp) => {
-        message1 = resp.data;
-      });
-      observer.register('api.tick').then((resp) => {
-        message2 = resp.data;
+      observer.register('api.history', (data) => {
+        message1 = data;
+      }, true);
+      observer.register('api.tick', (data) => {
+        message2 = data;
         done();
-      });
+      }, true);
       api.history('R_100', {
-        "end": "latest",
-        "count": 600,
-        "subscribe": 1
+        end: 'latest',
+        count: 600,
+        subscribe: 1,
       });
     });
     it('history return history data', () => {
@@ -50,16 +50,16 @@ describe('CustomApi', () => {
   });
   describe('buy', () => {
     let message;
-    before(function (done) {
+    before(function beforeAll(done) {
       this.timeout('5000');
-      api.authorize('c9A3gPFcqQtAQDW');
-      observer.register('api.authorize').then(() => {
+      observer.register('api.authorize', () => {
+        observer.register('api.error', (error) => {
+          message = error;
+          done();
+        }, true);
         api.buy('uw2mk7no3oktoRVVsB4Dz7TQnFfABuFDgO95dlxfMxRuPUsz', 100);
-        return observer.register('api.error');
-      }).then((resp) => {
-        message = resp.data;
-        done();
-      });
+      }, true);
+      api.authorize('nmjKBPWxM00E8Fh');
     });
     it('buy return InvalidContractProposal', () => {
       expect(message).to.have.deep.property('.code')

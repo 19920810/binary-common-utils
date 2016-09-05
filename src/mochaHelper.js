@@ -1,8 +1,10 @@
-'use strict';
-require('babel-polyfill');
-require('babel-register');
+require('babel-polyfill'); // eslint-disable-line import/no-extraneous-dependencies
+require('babel-register')({
+    sourceMaps: true,
+});
 require('jsdom-global')();
-global.localStorage = {};
 let xmldom = require('xmldom');
+
+global.localStorage = {};
 global.XMLSerializer = xmldom.XMLSerializer;
 global.DOMParser = xmldom.DOMParser;

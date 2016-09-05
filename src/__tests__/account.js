@@ -1,17 +1,16 @@
-'use strict';
-import {addTokenIfValid} from '../account';
-import {expect} from 'chai';
+import { expect } from 'chai'; // eslint-disable-line import/no-extraneous-dependencies
+import { addTokenIfValid } from '../account';
 
 describe('Account', () => {
 	let callbackResult;
-	before(function(done) {
+	before(function beforeAll(done) {
 		this.timeout('3000');
 		localStorage.tokenList = [
 			{
 				account_name: 'Virtual Account',
-				token: 'c9A3gPFcqQtAQDW',
-				isVirtual: 1
-			}
+				token: 'nmjKBPWxM00E8Fh',
+				isVirtual: 1,
+			},
 		];
 		addTokenIfValid('FakeToken', (result) => {
 			callbackResult = result;
