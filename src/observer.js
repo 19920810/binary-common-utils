@@ -57,14 +57,12 @@ export default class Observer {
     delete this.eventActionMap[event];
   }
   emit(event, data) {
-    return new Promise((resolve) => {
-      if (event in this.eventActionMap) {
-				for (let action of this.eventActionMap[event]) {
-          action.action(data);
-				}
-        resolve();
+    if (event in this.eventActionMap) {
+      let actions = [...this.eventActionMap[event]];
+      for (let action of actions) {
+        action.action(data);
       }
-    });
+    }
   }
 }
 
