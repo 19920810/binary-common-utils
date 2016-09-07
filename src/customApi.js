@@ -5,7 +5,8 @@ import { get as getStorage } from './storageManager';
 export default class CustomApi {
   constructor(websocketMock = null, onClose = null) {
     let option = {};
-    this.proposalMap = {};
+    this.proposalIdMap = {};
+    this.seenProposal = {};
     if (typeof window !== 'undefined') {
       option = {
         language: getStorage('lang'),
@@ -32,19 +33,6 @@ export default class CustomApi {
     if (onClose) {
       LiveApi.prototype.onClose = onClose;
     }
-    let originalSendRaw = LiveApi.prototype.sendRaw;
-    let that = this;
-    LiveApi.prototype.sendRaw = function sendRaw(json) {
-      if ('proposal' in json) {
-        for (let key of Object.keys(that.proposalMap)) {
-          if (that.proposalMap[key] === json.contract_type) {
-            delete that.proposalMap[key];
-          }
-        }
-        that.proposalMap[json.req_id] = json.contract_type;
-      }
-      originalSendRaw.call(this, json);
-    };
     this.events = {
       ohlc: (response, type) => {
         if (!this.apiFailed(response, type)) {
@@ -124,14 +112,26 @@ export default class CustomApi {
           return;
         }
         if (data.msg_type === 'proposal') {
-          data.proposal.contract_type = this.proposalMap[data.req_id];
+          if (!(data.proposal.id in this.seenProposal)) {
+            this.seenProposal[data.proposal.id] = true;
+          } else {
+            data.proposal.contract_type = this.proposalIdMap[data.proposal.id];
+            event(data, e);
+          }
+        } else {
+          event(data, e);
         }
-        event(data, e);
       });
       this[e] = (...args) => {
         let promise = events[e](...args);
         if (promise instanceof Promise) {
-          promise.then(() => 0, () => 0);
+          promise.then((pd) => {
+            if (e === 'proposal') {
+              this.proposalIdMap[pd.proposal.id] = args[0].contract_type;
+              pd.proposal.contract_type = args[0].contract_type;
+              event(pd, e);
+            }
+          }, () => 0);
         }
       };
     }
