@@ -23,12 +23,7 @@ export default class CustomApi {
       ohlc: () => 0,
       candles: () => 0,
       history: (symbol, args) => this.originalApi.getTickHistory(symbol, args),
-      proposal_open_contract: (contractId) =>  // eslint-disable-line camelcase
-        this.originalApi.send({
-          proposal_open_contract: 1,
-          contract_id: contractId,
-          subscribe: 1,
-        }),
+      proposal_open_contract: (contractId) => this.originalApi.subscribeToOpenContract(contractId),
       proposal: (...args) => this.originalApi.subscribeToPriceForContractProposal(...args),
       buy: (...args) => this.originalApi.buyContract(...args),
       authorize: (...args) => this.originalApi.authorize(...args),
@@ -153,4 +148,3 @@ export default class CustomApi {
     this.destroyed = true;
   }
 }
-
