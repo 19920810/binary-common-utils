@@ -34,15 +34,25 @@ export default class CustomApi {
       LiveApi.prototype.onClose = onClose;
     }
     this.events = {
-      ohlc: (response, type) => {
+      history: (response, type) => {
         if (!this.apiFailed(response, type)) {
-          let ohlc = response.ohlc;
-          observer.emit('api.ohlc', {
-            open: +ohlc.open,
-            high: +ohlc.high,
-            low: +ohlc.low,
-            close: +ohlc.close,
-            epoch: +ohlc.open_time,
+          let ticks = [];
+          let history = response.history;
+          history.times.forEach((time, index) => {
+            ticks.push({
+              epoch: +time,
+              quote: +history.prices[index],
+            });
+          });
+          observer.emit('api.history', ticks);
+        }
+      },
+      tick: (response, type) => {
+        if (!this.apiFailed(response, type)) {
+          let tick = response.tick;
+          observer.emit('api.tick', {
+            epoch: +tick.epoch,
+            quote: +tick.quote,
           });
         }
       },
@@ -62,26 +72,16 @@ export default class CustomApi {
           observer.emit('api.candles', candlesList);
         }
       },
-      tick: (response, type) => {
+      ohlc: (response, type) => {
         if (!this.apiFailed(response, type)) {
-          let tick = response.tick;
-          observer.emit('api.tick', {
-            epoch: +tick.epoch,
-            quote: +tick.quote,
+          let ohlc = response.ohlc;
+          observer.emit('api.ohlc', {
+            open: +ohlc.open,
+            high: +ohlc.high,
+            low: +ohlc.low,
+            close: +ohlc.close,
+            epoch: +ohlc.open_time,
           });
-        }
-      },
-      history: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          let ticks = [];
-          let history = response.history;
-          history.times.forEach((time, index) => {
-            ticks.push({
-              epoch: +time,
-              quote: +history.prices[index],
-            });
-          });
-          observer.emit('api.history', ticks);
         }
       },
       authorize: (response, type) => {
