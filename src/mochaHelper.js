@@ -1,4 +1,3 @@
-require('babel-polyfill'); // eslint-disable-line import/no-extraneous-dependencies
 require('babel-register')({
     sourceMaps: true,
 });

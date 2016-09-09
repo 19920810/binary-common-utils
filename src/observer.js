@@ -64,6 +64,9 @@ export default class Observer {
       }
     }
   }
+  destroy() {
+    this.eventActionMap = {};
+  }
 }
 
 export const observer = new Observer();

@@ -145,6 +145,9 @@ export default class CustomApi {
     return false;
   }
   destroy() {
+    this.originalApi.socket.close();
     this.destroyed = true;
+    this.proposalIdMap = {};
+    this.seenProposal = {};
   }
 }
