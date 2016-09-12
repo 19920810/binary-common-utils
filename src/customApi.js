@@ -111,7 +111,9 @@ export default class CustomApi {
         if (this.destroyed) {
           return;
         }
-        if (data.msg_type === 'proposal') {
+        if ('error' in data) {
+          this.events.error(data, e);
+        } else if (data.msg_type === 'proposal') {
           if (!(data.proposal.id in this.seenProposal)) {
             this.seenProposal[data.proposal.id] = true;
           } else {
