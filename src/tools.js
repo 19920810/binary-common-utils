@@ -2,8 +2,8 @@ export const parseQueryString = () => {
   if (typeof window === 'undefined') {
     return {};
   }
-  let str = window.location.search;
-  let objURL = {};
+  const str = window.location.search;
+  const objURL = {};
   str.replace(
     new RegExp('([^?=&]+)(=([^&]*))?', 'g'),
     (a0, a1, a2, a3) => {
@@ -16,7 +16,7 @@ export const parseQueryString = () => {
 export const getObjectValue = (obj) => obj[Object.keys(obj)[0]];
 
 export const getUTCTime = (date) => {
-  let dateObject = new Date(date);
+  const dateObject = new Date(date);
   return ('0' + dateObject.getUTCHours())
       .slice(-2) + ':' + ('0' + dateObject.getUTCMinutes())
       .slice(-2) + ':' + ('0' + dateObject.getUTCSeconds())
@@ -44,8 +44,8 @@ export const expandDuration = (duration) => duration.replace(/t/g, ' tick')
     .replace(/d/g, ' day') + '(s)';
 
 export const durationToSecond = (duration) => {
-  let durationInt = parseInt(duration, 10);
-  let durationType = duration.replace(durationInt.toString(), '');
+  const durationInt = parseInt(duration, 10);
+  const durationType = duration.replace(durationInt.toString(), '');
   if (durationType === 's') {
     return durationInt;
   }

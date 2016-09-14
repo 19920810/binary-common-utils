@@ -18,7 +18,7 @@ export default class CustomApi {
     } else {
       option.keepAlive = true;
     }
-    let events = {
+    const events = {
       tick: () => 0,
       error: () => 0,
       ohlc: () => 0,
@@ -36,8 +36,8 @@ export default class CustomApi {
     this.events = {
       history: (response, type) => {
         if (!this.apiFailed(response, type)) {
-          let ticks = [];
-          let history = response.history;
+          const ticks = [];
+          const history = response.history;
           history.times.forEach((time, index) => {
             ticks.push({
               epoch: +time,
@@ -49,7 +49,7 @@ export default class CustomApi {
       },
       tick: (response, type) => {
         if (!this.apiFailed(response, type)) {
-          let tick = response.tick;
+          const tick = response.tick;
           observer.emit('api.tick', {
             epoch: +tick.epoch,
             quote: +tick.quote,
@@ -58,9 +58,9 @@ export default class CustomApi {
       },
       candles: (response, type) => {
         if (!this.apiFailed(response, type)) {
-          let candlesList = [];
-          let candles = response.candles;
-          for (let o of candles) {
+          const candlesList = [];
+          const candles = response.candles;
+          for (const o of candles) {
             candlesList.push({
               open: +o.open,
               high: +o.high,
@@ -74,7 +74,7 @@ export default class CustomApi {
       },
       ohlc: (response, type) => {
         if (!this.apiFailed(response, type)) {
-          let ohlc = response.ohlc;
+          const ohlc = response.ohlc;
           observer.emit('api.ohlc', {
             open: +ohlc.open,
             high: +ohlc.high,
@@ -104,8 +104,8 @@ export default class CustomApi {
       },
     };
     this.originalApi = new LiveApi(option);
-    for (let e of Object.keys(events)) {
-      let event = (!this.events[e]) ?
+    for (const e of Object.keys(events)) {
+      const event = (!this.events[e]) ?
         this.events._default : this.events[e]; // eslint-disable-line no-underscore-dangle
       this.originalApi.events.on(e, (data) => {
         if (this.destroyed) {
@@ -125,7 +125,7 @@ export default class CustomApi {
         }
       });
       this[e] = (...args) => {
-        let promise = events[e](...args);
+        const promise = events[e](...args);
         if (promise instanceof Promise) {
           promise.then((pd) => {
             if (e === 'proposal') {

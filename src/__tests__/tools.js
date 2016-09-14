@@ -14,7 +14,7 @@ describe('Misc Tools', () => {
   });
   describe('getObjectValue', () => {
     it('getObjectValue gets the value of an object with one attribute', () => {
-      let obj = {
+      const obj = {
         key: 'value',
       };
       expect(getObjectValue(obj)).to.be.equal('value');
@@ -22,7 +22,7 @@ describe('Misc Tools', () => {
   });
   describe('getUTCTime', () => {
     it('getUTCTime gets the current UTC time with format HH:MM:SS', () => {
-      let date = new Date('1990-01-01T01:11:10.000Z');
+      const date = new Date('1990-01-01T01:11:10.000Z');
       expect(getUTCTime(date)).to.be.equal('01:11:10');
     });
   });

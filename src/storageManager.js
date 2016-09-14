@@ -20,9 +20,9 @@ export const findToken = (token = '') => getTokenList()
   .findIndex((tokenInfo) => tokenInfo.token === token);
 
 export const addToken = (token = '', accountName = '', isVirtual = '') => {
-  let tokenList = getTokenList();
-  let tokenIndex = findToken(token);
-  let accountIndex = findAccount(accountName);
+  const tokenList = getTokenList();
+  const tokenIndex = findToken(token);
+  const accountIndex = findAccount(accountName);
   if (tokenIndex < 0 && accountIndex < 0) {
     tokenList.push({
       account_name: accountName,
@@ -34,15 +34,15 @@ export const addToken = (token = '', accountName = '', isVirtual = '') => {
 };
 
 export const getToken = (token) => {
-  let tokenList = getTokenList();
-  let index = findToken(token);
+  const tokenList = getTokenList();
+  const index = findToken(token);
   return (index >= 0) ? tokenList[index] : {};
 };
 
 export const removeToken = (token) => {
-  let index = findToken(token);
+  const index = findToken(token);
   if (index > -1) {
-    let tokenList = getTokenList();
+    const tokenList = getTokenList();
     tokenList.splice(index, 1);
     localStorage.tokenList = tokenList;
   }

@@ -2,7 +2,7 @@ require('babel-register')({
     sourceMaps: true,
 });
 require('jsdom-global')();
-let xmldom = require('xmldom');
+const xmldom = require('xmldom');
 
 global.localStorage = {};
 global.XMLSerializer = xmldom.XMLSerializer;

@@ -50,7 +50,7 @@ describe('StorageManager', () => {
     });
     it('addToken should be able to add real token and findToken should find it', () => {
       addToken(realToken.token, realToken.account_name, 0);
-      let tokenList = getTokenList();
+      const tokenList = getTokenList();
       expect(tokenList[findToken('RealToken')])
         .to.be.deep.equal({
         account_name: 'Real Account',

@@ -3,10 +3,10 @@ import { addToken, removeToken, getTokenList, removeAllTokens } from './storageM
 
 export const addTokenIfValid = (token, callback = () => {
   }) => {
-  let option = (typeof WebSocket === 'undefined') ? {
+  const option = (typeof WebSocket === 'undefined') ? {
     websocket: require('ws'), // eslint-disable-line global-require, import/no-extraneous-dependencies
   } : {}; // eslint-disable-line import/newline-after-import
-  let api = new LiveApi(option);
+  const api = new LiveApi(option);
   api.authorize(token)
     .then((response) => {
       api.disconnect();
@@ -20,12 +20,12 @@ export const addTokenIfValid = (token, callback = () => {
 };
 
 export const logoutAllTokens = (callback) => {
-  let option = (typeof WebSocket === 'undefined') ? {
+  const option = (typeof WebSocket === 'undefined') ? {
       websocket: require('ws'), // eslint-disable-line global-require, import/no-extraneous-dependencies
     } : {}; // eslint-disable-line import/newline-after-import
-  let api = new LiveApi(option);
-  let tokenList = getTokenList();
-  let logout = () => {
+  const api = new LiveApi(option);
+  const tokenList = getTokenList();
+  const logout = () => {
     removeAllTokens();
     api.disconnect();
     callback();

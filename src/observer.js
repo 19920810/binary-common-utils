@@ -6,10 +6,10 @@ export default class Observer {
     if (unregisterAllBefore) {
       this.unregisterAll(event);
     }
-    let apiError = (error) => {
+    const apiError = (error) => {
       if (error.type === unregisterIfError.type) {
         this.unregister('api.error', apiError);
-        for (let unreg of unregisterIfError.unregister) {
+        for (const unreg of unregisterIfError.unregister) {
           if (unreg instanceof Array) {
             this.unregister(...unreg);
           } else {
@@ -21,7 +21,7 @@ export default class Observer {
     if (unregisterIfError) {
       this.register('api.error', apiError);
     }
-    let action = (...args) => {
+    const action = (...args) => {
       if (once) {
         this.unregister(event, _action);
       }
@@ -30,7 +30,7 @@ export default class Observer {
       }
       _action(...args);
     };
-    let actionList = this.eventActionMap[event];
+    const actionList = this.eventActionMap[event];
     if (actionList) {
       actionList.push({
         action,
@@ -44,8 +44,8 @@ export default class Observer {
     }
   }
   unregister(event, _function) {
-    let actionList = this.eventActionMap[event];
-    let i = actionList.findIndex((r) => r.searchBy === _function);
+    const actionList = this.eventActionMap[event];
+    const i = actionList.findIndex((r) => r.searchBy === _function);
     if (i >= 0) {
       actionList.splice(i, 1);
     }
@@ -58,8 +58,8 @@ export default class Observer {
   }
   emit(event, data) {
     if (event in this.eventActionMap) {
-      let actions = [...this.eventActionMap[event]];
-      for (let action of actions) {
+      const actions = [...this.eventActionMap[event]];
+      for (const action of actions) {
         action.action(data);
       }
     }
