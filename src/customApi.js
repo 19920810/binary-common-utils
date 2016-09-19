@@ -23,6 +23,7 @@ export default class CustomApi {
       error: () => 0,
       ohlc: () => 0,
       candles: () => 0,
+      forget_all: () => 0,
       history: (symbol, args) => this.originalApi.getTickHistory(symbol, args),
       proposal_open_contract: (contractId) => this.originalApi.subscribeToOpenContract(contractId),
       proposal: (...args) => this.originalApi.subscribeToPriceForContractProposal(...args),
@@ -113,6 +114,8 @@ export default class CustomApi {
         }
         if ('error' in data) {
           this.events.error(data, e);
+          this.proposalIdMap = {};
+          this.seenProposal = {};
         } else if (data.msg_type === 'proposal') {
           if (!(data.proposal.id in this.seenProposal)) {
             this.seenProposal[data.proposal.id] = true;
@@ -121,6 +124,12 @@ export default class CustomApi {
             event(data, e);
           }
         } else {
+          if (e === 'forget_all') {
+            if (data.echo_req && data.echo_req.forget_all === 'proposal') {
+              this.proposalIdMap = {};
+              this.seenProposal = {};
+            }
+          }
           event(data, e);
         }
       });
