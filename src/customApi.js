@@ -18,7 +18,7 @@ export default class CustomApi {
     } else {
       option.keepAlive = true;
     }
-    const events = {
+    const requestHandlers = {
       tick: () => 0,
       error: () => 0,
       ohlc: () => 0,
@@ -34,7 +34,7 @@ export default class CustomApi {
     if (onClose) {
       LiveApi.prototype.onClose = onClose;
     }
-    this.events = {
+    this.responseHandlers = {
       history: (response, type) => {
         if (!this.apiFailed(response, type)) {
           const ticks = [];
@@ -105,15 +105,15 @@ export default class CustomApi {
       },
     };
     this.originalApi = new LiveApi(option);
-    for (const e of Object.keys(events)) {
-      const event = (!this.events[e]) ?
-        this.events._default : this.events[e]; // eslint-disable-line no-underscore-dangle
+    for (const e of Object.keys(requestHandlers)) {
+      const responseHander = (!this.responseHandlers[e]) ?
+        this.responseHandlers._default : this.responseHandlers[e]; // eslint-disable-line no-underscore-dangle
       this.originalApi.events.on(e, (data) => {
         if (this.destroyed) {
           return;
         }
         if ('error' in data) {
-          this.events.error(data, e);
+          this.responseHandlers.error(data, e);
           this.proposalIdMap = {};
           this.seenProposal = {};
         } else if (data.msg_type === 'proposal') {
@@ -121,7 +121,7 @@ export default class CustomApi {
             this.seenProposal[data.proposal.id] = true;
           } else {
             data.proposal.contract_type = this.proposalIdMap[data.proposal.id];
-            event(data, e);
+            responseHander(data, e);
           }
         } else {
           if (e === 'forget_all') {
@@ -130,21 +130,28 @@ export default class CustomApi {
               this.seenProposal = {};
             }
           }
-          event(data, e);
+          responseHander(data, e);
         }
       });
       this[e] = (...args) => {
-        const promise = events[e](...args);
-        if (promise instanceof Promise) {
-          promise.then((pd) => {
-            if (e === 'proposal') {
-              this.proposalIdMap[pd.proposal.id] = args[0].contract_type;
-              pd.proposal.contract_type = args[0].contract_type;
-              event(pd, e);
-            }
-          }, () => 0);
-        }
+        this.handlePromiseForCalls(e, args, requestHandlers, responseHander);
       };
+    }
+  }
+  handlePromiseForCalls(e, args, requestHandlers, responseHander) {
+    const promise = requestHandlers[e](...args);
+    if (promise instanceof Promise) {
+      promise.then((pd) => {
+        if (e === 'proposal') {
+          this.proposalIdMap[pd.proposal.id] = args[0].contract_type;
+          pd.proposal.contract_type = args[0].contract_type;
+          responseHander(pd, e);
+        }
+      }, (err) => {
+        if (err.name === 'DisconnectError') {
+          this.handlePromiseForCalls(e, args, requestHandlers, responseHander);
+        }
+      });
     }
   }
   apiFailed(response, type) {
