@@ -19,7 +19,7 @@ describe('CustomApi', () => {
       api.authorize('FakeToken');
     });
     it('authorize return invalid token', () => {
-      expect(message).to.have.deep.property('.code')
+      expect(message).to.have.deep.property('.error.code')
         .that.be.equal('InvalidToken');
     });
   });
@@ -62,7 +62,7 @@ describe('CustomApi', () => {
       api.authorize('nmjKBPWxM00E8Fh');
     });
     it('buy return InvalidContractProposal', () => {
-      expect(message).to.have.deep.property('.code')
+      expect(message).to.have.deep.property('.error.code')
         .that.be.equal('InvalidContractProposal');
     });
   });

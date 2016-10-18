@@ -13,8 +13,9 @@
     ]
   },
   "scripts": {
-    "test": "./node_modules/.bin/eslint src/ && gulp && ./node_modules/.bin/_mocha --require ./src/mochaHelper.js --compilers js:babel-core/register ./src/__tests__/*.js",
-    "debug": "gulp && ./node_modules/.bin/mocha --require ./src/mochaHelper.js --compilers js:babel-core/register --debug-brk ./src/__tests__/*.js",
+    "test": "./node_modules/.bin/eslint src/ && ./node_modules/.bin/_mocha --require ./src/mochaHelper.js --compilers js:babel-core/register ./src/__tests__/*.js",
+    "debug": "./node_modules/.bin/mocha --require ./src/mochaHelper.js --compilers js:babel-core/register --debug-brk ./src/__tests__/*.js",
+    "prepublish": "gulp",
     "publish-latest": "npm test && npm version from-git && npm publish"
   },
   "repository": {

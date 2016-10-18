@@ -35,73 +35,57 @@ export default class CustomApi {
       LiveApi.prototype.onClose = onClose;
     }
     this.responseHandlers = {
-      history: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          const ticks = [];
-          const history = response.history;
-          history.times.forEach((time, index) => {
-            ticks.push({
-              epoch: +time,
-              quote: +history.prices[index],
-            });
+      history: (response) => {
+        const ticks = [];
+        const history = response.history;
+        history.times.forEach((time, index) => {
+          ticks.push({
+            epoch: +time,
+            quote: +history.prices[index],
           });
-          observer.emit('api.history', ticks);
-        }
+        });
+        observer.emit('api.history', ticks);
       },
-      tick: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          const tick = response.tick;
-          observer.emit('api.tick', {
-            epoch: +tick.epoch,
-            quote: +tick.quote,
-          });
-        }
+      tick: (response) => {
+        const tick = response.tick;
+        observer.emit('api.tick', {
+          epoch: +tick.epoch,
+          quote: +tick.quote,
+        });
       },
-      candles: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          const candlesList = [];
-          const candles = response.candles;
-          for (const o of candles) {
-            candlesList.push({
-              open: +o.open,
-              high: +o.high,
-              low: +o.low,
-              close: +o.close,
-              epoch: +o.epoch,
-            });
-          }
-          observer.emit('api.candles', candlesList);
-        }
-      },
-      ohlc: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          const ohlc = response.ohlc;
-          observer.emit('api.ohlc', {
-            open: +ohlc.open,
-            high: +ohlc.high,
-            low: +ohlc.low,
-            close: +ohlc.close,
-            epoch: +ohlc.open_time,
+      candles: (response) => {
+        const candlesList = [];
+        const candles = response.candles;
+        for (const o of candles) {
+          candlesList.push({
+            open: +o.open,
+            high: +o.high,
+            low: +o.low,
+            close: +o.close,
+            epoch: +o.epoch,
           });
         }
+        observer.emit('api.candles', candlesList);
       },
-      authorize: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          observer.emit('api.authorize', response.authorize);
-        }
+      ohlc: (response) => {
+        const ohlc = response.ohlc;
+        observer.emit('api.ohlc', {
+          open: +ohlc.open,
+          high: +ohlc.high,
+          low: +ohlc.low,
+          close: +ohlc.close,
+          epoch: +ohlc.open_time,
+        });
       },
-      error: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          response.error.type = type;
-          observer.emit('api.error', response);
-          observer.emit('api.' + type, response[type]);
-        }
+      authorize: (response) => {
+        observer.emit('api.authorize', response.authorize);
+      },
+      error: (response) => {
+        observer.emit('api.error', response);
       },
       _default: (response, type) => {
-        if (!this.apiFailed(response, type)) {
-          observer.emit('api.log', response);
-          observer.emit('api.' + type, response[type]);
-        }
+        observer.emit('api.log', response);
+        observer.emit('api.' + type, response[type]);
       },
     };
     this.originalApi = new LiveApi(option);
@@ -113,7 +97,7 @@ export default class CustomApi {
           return;
         }
         if ('error' in data) {
-          this.responseHandlers.error(data, e);
+          this.responseHandlers.error(data);
           this.proposalIdMap = {};
           this.seenProposal = {};
         } else if (data.msg_type === 'proposal') {
@@ -153,14 +137,6 @@ export default class CustomApi {
         }
       });
     }
-  }
-  apiFailed(response, type) {
-    if (response.error) {
-      response.error.type = type;
-      observer.emit('api.error', response.error);
-      return true;
-    }
-    return false;
   }
   destroy() {
     this.originalApi.socket.close();
