@@ -19,7 +19,7 @@ export default class CustomApi {
       option.keepAlive = true;
     }
     if (connection) {
-      option.connection = connection
+      option.connection = connection;
     }
     const requestHandlers = {
       tick: () => 0,
