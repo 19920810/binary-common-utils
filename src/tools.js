@@ -36,32 +36,3 @@ export const strToXml = (str) => {
   }
   return xmlDoc;
 };
-
-export const expandDuration = (duration) => duration.replace(/t/g, ' tick')
-    .replace(/s/g, ' second')
-    .replace(/m/g, ' minute')
-    .replace(/h/g, ' hour')
-    .replace(/d/g, ' day') + '(s)';
-
-export const durationToSecond = (duration) => {
-  const durationInt = parseInt(duration, 10);
-  const durationType = duration.replace(durationInt.toString(), '');
-  if (durationType === 's') {
-    return durationInt;
-  }
-  if (durationType === 't') {
-    return durationInt * 2;
-  }
-  if (durationType === 'm') {
-    return durationInt * 60;
-  }
-  if (durationType === 'h') {
-    return durationInt * 60 * 60;
-  }
-  if (durationType === 'd') {
-    return durationInt * 60 * 60 * 24;
-  }
-  throw Error('Duration type not accepted');
-};
-
-export const durationAccepted = (duration, min) => durationToSecond(duration) >= durationToSecond(min);

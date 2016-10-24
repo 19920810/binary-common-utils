@@ -3,7 +3,7 @@ import { observer } from './observer';
 import { get as getStorage } from './storageManager';
 
 export default class CustomApi {
-  constructor(websocketMock = null, onClose = null) {
+  constructor(websocketMock = null, onClose = null, connection = null) {
     let option = {};
     this.proposalIdMap = {};
     this.seenProposal = {};
@@ -17,6 +17,9 @@ export default class CustomApi {
       option.websocket = websocketMock;
     } else {
       option.keepAlive = true;
+    }
+    if (connection) {
+      option.connection = connection
     }
     const requestHandlers = {
       tick: () => 0,
