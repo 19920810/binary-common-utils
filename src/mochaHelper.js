@@ -1,6 +1,4 @@
-require('babel-register')({
-    sourceMaps: true,
-});
+require('babel-register')();
 require('jsdom-global')();
 const xmldom = require('xmldom');
 
