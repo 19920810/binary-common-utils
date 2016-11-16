@@ -88,7 +88,7 @@ export default class CustomApi {
       },
       _default: (response, type) => {
         observer.emit('api.log', response);
-        response[type].echo_req = response.echo_req
+        response[type].echo_req = response.echo_req;
         observer.emit('api.' + type, response[type]);
       },
     };
