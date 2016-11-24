@@ -9,12 +9,15 @@ export const addTokenIfValid = (token, callback = () => {
   const api = new LiveApi(option);
   api.authorize(token)
     .then((response) => {
-      api.disconnect();
-      addToken(token, response.authorize.loginid, response.authorize.is_virtual);
-      callback(null);
+      api.getLandingCompanyDetails(response.authorize.landing_company_name).then(r => {
+        addToken(token, response.authorize.loginid,
+          response.authorize.is_virtual, r.landing_company_details.has_reality_check);
+        api.disconnect();
+        callback(null);
+      }, () => 0);
     }, () => {
-      api.disconnect();
       removeToken(token);
+      api.disconnect();
       callback('Error');
     });
 };

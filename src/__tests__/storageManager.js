@@ -23,6 +23,7 @@ describe('StorageManager', () => {
       localStorage.tokenList = JSON.stringify([
         {
           account_name: 'Real Account',
+          hasRealityCheck: 0,
           token: 'RealToken',
           isVirtual: 0,
         },
@@ -37,7 +38,7 @@ describe('StorageManager', () => {
     });
     it('getToken should be get the real token', () => {
       expect(getToken('RealToken')).to.be.an('Object')
-        .that.has.keys(['account_name', 'token', 'isVirtual']);
+        .that.has.keys(['account_name', 'token', 'isVirtual', 'hasRealityCheck']);
       realToken = getToken('RealToken');
     });
     it('removeToken real should be able to remove real token', () => {
@@ -56,6 +57,7 @@ describe('StorageManager', () => {
         account_name: 'Real Account',
         token: 'RealToken',
         isVirtual: 0,
+        hasRealityCheck: 0,
       });
     });
     it('removeAllTokens should remove all tokens and getToken should be empty', () => {

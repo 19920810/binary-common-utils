@@ -2,23 +2,24 @@ import { expect } from 'chai'; // eslint-disable-line import/no-extraneous-depen
 import { addTokenIfValid } from '../account';
 
 describe('Account', () => {
-	let callbackResult;
-	before(function beforeAll(done) {
-		this.timeout('3000');
-		localStorage.tokenList = [
-			{
-				account_name: 'Virtual Account',
-				token: 'nmjKBPWxM00E8Fh',
-				isVirtual: 1,
-			},
-		];
-		addTokenIfValid('FakeToken', (result) => {
-			callbackResult = result;
-			done();
-		});
-	});
-	it('callback result should be error', () => {
-		expect(callbackResult).to.be.a('string')
-			.and.to.be.equal('Error');
-	});
+  let callbackResult;
+  const expected = [{
+    account_name: 'VRTC1339394',
+    token: 'nmjKBPWxM00E8Fh',
+    isVirtual: 1,
+    hasRealityCheck: 0,
+  }];
+  before(function beforeAll(done) {
+    this.timeout('4000');
+    addTokenIfValid('nmjKBPWxM00E8Fh', (result) => {
+      callbackResult = result;
+      done();
+    });
+  });
+  it('callback result should be null', () => {
+    expect(callbackResult)
+      .to.be.equal(null);
+    expect(JSON.parse(localStorage.tokenList))
+      .to.be.deep.equal(expected);
+  });
 });
