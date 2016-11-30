@@ -93,10 +93,10 @@ export default class CustomApi {
       },
     };
     this.originalApi = new LiveApi(option);
-    for (const e of Object.keys(requestHandlers)) {
-      const responseHander = (!this.responseHandlers[e]) ?
-        this.responseHandlers._default : this.responseHandlers[e]; // eslint-disable-line no-underscore-dangle
-      this.originalApi.events.on(e, (data) => {
+    for (const type of Object.keys(requestHandlers)) {
+      const responseHander = (!this.responseHandlers[type]) ?
+        this.responseHandlers._default : this.responseHandlers[type]; // eslint-disable-line no-underscore-dangle
+      this.originalApi.events.on(type, (data) => {
         if (this.destroyed) {
           return;
         }
@@ -109,36 +109,36 @@ export default class CustomApi {
             this.seenProposal[data.proposal.id] = true;
           } else {
             data.proposal.contract_type = this.proposalIdMap[data.proposal.id];
-            responseHander(data, e);
+            responseHander(data, type);
           }
         } else {
-          if (e === 'forget_all') {
+          if (type === 'forget_all') {
             if (data.echo_req && data.echo_req.forget_all === 'proposal') {
               this.proposalIdMap = {};
               this.seenProposal = {};
             }
           }
-          responseHander(data, e);
+          responseHander(data, type);
         }
       });
-      this[e] = (...args) => {
-        this.handlePromiseForCalls(e, args, requestHandlers, responseHander);
+      this[type] = (...args) => {
+        this.handlePromiseForCalls(type, args, requestHandlers, responseHander);
       };
     }
   }
-  handlePromiseForCalls(e, args, requestHandlers, responseHander) {
-    const promise = requestHandlers[e](...args);
+  handlePromiseForCalls(type, args, requestHandlers, responseHander) {
+    const promise = requestHandlers[type](...args);
     if (promise instanceof Promise) {
-      promise.then((pd) => {
-        if (e === 'proposal') {
-          this.proposalIdMap[pd.proposal.id] = args[0].contract_type;
-          pd.proposal.contract_type = args[0].contract_type;
-          responseHander(pd, e);
+      promise.then((data) => {
+        if (type === 'proposal') {
+          this.proposalIdMap[data.proposal.id] = args[0].contract_type;
+          data.proposal.contract_type = args[0].contract_type;
+          responseHander(data, type);
         }
       }, (err) => {
-        if (err.name === 'DisconnectError') {
-          this.handlePromiseForCalls(e, args, requestHandlers, responseHander);
-        }
+        this.responseHandlers.error(err);
+        this.proposalIdMap = {};
+        this.seenProposal = {};
       });
     }
   }
