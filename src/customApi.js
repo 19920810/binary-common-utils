@@ -94,7 +94,6 @@ export default class CustomApi {
     };
     option.sendSpy = e => {
       const reqData = JSON.parse(e);
-      console.log(reqData);
       if (reqData.proposal) {
         proposalTypeMap[reqData.req_id] = reqData.contract_type;
       } else if (reqData.forget_all && reqData.forget_all === 'proposal') {
@@ -105,7 +104,7 @@ export default class CustomApi {
     for (const type of Object.keys(requestHandlers)) {
       const responseHander = (!this.responseHandlers[type]) ?
         this.responseHandlers._default : this.responseHandlers[type]; // eslint-disable-line no-underscore-dangle
-      this.originalApi.events.on(type, (data) => {
+      this.originalApi.events.on(type, (data) => { // eslint-disable-line no-loop-func
         if (this.destroyed) {
           return;
         }
@@ -119,11 +118,11 @@ export default class CustomApi {
         }
       });
       this[type] = (...args) => {
-        this.handlePromiseForCalls(type, args, requestHandlers, responseHander);
+        this.handlePromiseForCalls(type, args, requestHandlers);
       };
     }
   }
-  handlePromiseForCalls(type, args, requestHandlers, responseHander) {
+  handlePromiseForCalls(type, args, requestHandlers) {
     const promise = requestHandlers[type](...args);
     if (promise instanceof Promise) {
       promise.then(() => {}, (err) => {
