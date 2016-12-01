@@ -2,11 +2,11 @@ import { LiveApi } from 'binary-live-api';
 import { observer } from './observer';
 import { get as getStorage } from './storageManager';
 
+let proposalTypeMap = {};
+
 export default class CustomApi {
   constructor(websocketMock = null, onClose = null, connection = null) {
     let option = {};
-    this.proposalIdMap = {};
-    this.seenProposal = {};
     if (typeof window !== 'undefined') {
       option = {
         language: getStorage('lang'),
@@ -92,6 +92,15 @@ export default class CustomApi {
         observer.emit('api.' + type, response[type]);
       },
     };
+    option.sendSpy = e => {
+      const reqData = JSON.parse(e);
+      console.log(reqData);
+      if (reqData.proposal) {
+        proposalTypeMap[reqData.req_id] = reqData.contract_type;
+      } else if (reqData.forget_all && reqData.forget_all === 'proposal') {
+        proposalTypeMap = {};
+      }
+    };
     this.originalApi = new LiveApi(option);
     for (const type of Object.keys(requestHandlers)) {
       const responseHander = (!this.responseHandlers[type]) ?
@@ -102,21 +111,9 @@ export default class CustomApi {
         }
         if ('error' in data) {
           this.responseHandlers.error(data);
-          this.proposalIdMap = {};
-          this.seenProposal = {};
-        } else if (data.msg_type === 'proposal') {
-          if (!(data.proposal.id in this.seenProposal)) {
-            this.seenProposal[data.proposal.id] = true;
-          } else {
-            data.proposal.contract_type = this.proposalIdMap[data.proposal.id];
-            responseHander(data, type);
-          }
         } else {
-          if (type === 'forget_all') {
-            if (data.echo_req && data.echo_req.forget_all === 'proposal') {
-              this.proposalIdMap = {};
-              this.seenProposal = {};
-            }
+          if ('proposal' in data) {
+            data.proposal.contract_type = proposalTypeMap[data.req_id];
           }
           responseHander(data, type);
         }
@@ -129,23 +126,15 @@ export default class CustomApi {
   handlePromiseForCalls(type, args, requestHandlers, responseHander) {
     const promise = requestHandlers[type](...args);
     if (promise instanceof Promise) {
-      promise.then((data) => {
-        if (type === 'proposal') {
-          this.proposalIdMap[data.proposal.id] = args[0].contract_type;
-          data.proposal.contract_type = args[0].contract_type;
-          responseHander(data, type);
+      promise.then(() => {}, (err) => {
+        if (type === 'buy') {
+          this.responseHandlers.error(err);
         }
-      }, (err) => {
-        this.responseHandlers.error(err);
-        this.proposalIdMap = {};
-        this.seenProposal = {};
       });
     }
   }
   destroy() {
     this.originalApi.socket.close();
     this.destroyed = true;
-    this.proposalIdMap = {};
-    this.seenProposal = {};
   }
 }
