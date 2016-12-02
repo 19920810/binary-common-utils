@@ -22,17 +22,3 @@ export const getUTCTime = (date) => {
       .slice(-2) + ':' + ('0' + dateObject.getUTCSeconds())
       .slice(-2);
 };
-
-export const strToXml = (str) => {
-  let xmlDoc;
-  let parser;
-  if (window.DOMParser) {
-    parser = new DOMParser();
-    xmlDoc = parser.parseFromString(str, 'text/xml');
-  } else if (window.ActiveXObject) {
-    xmlDoc = new window.ActiveXObject('Microsoft.XMLDOM');
-    xmlDoc.async = false;
-    xmlDoc.loadXML(str);
-  }
-  return xmlDoc;
-};
