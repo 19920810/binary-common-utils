@@ -6,8 +6,9 @@ describe('Account', () => {
   const expected = [{
     account_name: 'VRTC1339394',
     token: 'nmjKBPWxM00E8Fh',
-    isVirtual: 1,
-    hasRealityCheck: 0,
+    isVirtual: true,
+    hasRealityCheck: false,
+    hasTradeLimitation: false,
   }];
   before(function beforeAll(done) {
     this.timeout('4000');

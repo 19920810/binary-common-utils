@@ -23,9 +23,10 @@ describe('StorageManager', () => {
       localStorage.tokenList = JSON.stringify([
         {
           account_name: 'Real Account',
-          hasRealityCheck: 0,
           token: 'RealToken',
-          isVirtual: 0,
+          isVirtual: false,
+          hasRealityCheck: false,
+          hasTradeLimitation: false,
         },
       ]);
     });
@@ -38,7 +39,7 @@ describe('StorageManager', () => {
     });
     it('getToken should be get the real token', () => {
       expect(getToken('RealToken')).to.be.an('Object')
-        .that.has.keys(['account_name', 'token', 'isVirtual', 'hasRealityCheck']);
+        .that.has.keys(['account_name', 'token', 'isVirtual', 'hasRealityCheck', 'hasTradeLimitation']);
       realToken = getToken('RealToken');
     });
     it('removeToken real should be able to remove real token', () => {
@@ -46,18 +47,18 @@ describe('StorageManager', () => {
       expect(getTokenList()).to.be.empty;
     });
     it('addToken should be able to add real token and findToken should find it', () => {
-      getTokenList(realToken.token, realToken.account_name, 0);
       expect(findToken('RealToken')).not.to.be.empty;
     });
     it('addToken should be able to add real token and findToken should find it', () => {
-      addToken(realToken.token, realToken.account_name, 0);
+      addToken(realToken.token, realToken.account_name, false);
       const tokenList = getTokenList();
       expect(tokenList[findToken('RealToken')])
         .to.be.deep.equal({
         account_name: 'Real Account',
         token: 'RealToken',
-        isVirtual: 0,
-        hasRealityCheck: 0,
+        isVirtual: false,
+        hasRealityCheck: false,
+        hasTradeLimitation: false,
       });
     });
     it('removeAllTokens should remove all tokens and getToken should be empty', () => {

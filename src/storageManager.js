@@ -19,7 +19,7 @@ const findAccount = (accountName = '') => getTokenList()
 export const findToken = (token = '') => getTokenList()
   .findIndex((tokenInfo) => tokenInfo.token === token);
 
-export const addToken = (token = '', accountName = '', isVirtual = 0, hasRealityCheck = 0) => {
+export const addToken = (token = '', accountName = '', isVirtual = false, hasRealityCheck = false, hasTradeLimitation = false) => {
   const tokenList = getTokenList();
   const tokenIndex = findToken(token);
   const accountIndex = findAccount(accountName);
@@ -29,6 +29,7 @@ export const addToken = (token = '', accountName = '', isVirtual = 0, hasReality
       token,
       isVirtual,
       hasRealityCheck,
+      hasTradeLimitation,
     });
     setTokenList(tokenList);
   }

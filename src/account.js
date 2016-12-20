@@ -9,9 +9,12 @@ export const addTokenIfValid = (token, callback = () => {
   const api = new LiveApi(option);
   api.authorize(token)
     .then((response) => {
-      api.getLandingCompanyDetails(response.authorize.landing_company_name).then(r => {
+      const landingCompanyName = response.authorize.landing_company_name;
+      api.getLandingCompanyDetails(landingCompanyName).then(r => {
         addToken(token, response.authorize.loginid,
-          response.authorize.is_virtual, r.landing_company_details.has_reality_check);
+          !!response.authorize.is_virtual, !!r.landing_company_details.has_reality_check,
+          ['iom', 'malta'].includes(landingCompanyName)
+        );
         api.disconnect();
         callback(null);
       }, () => 0);
