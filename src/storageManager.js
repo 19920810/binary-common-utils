@@ -1,16 +1,22 @@
+let store = {};
+
+if (typeof localStorage !== 'undefined') {
+  store = localStorage;
+}
+
 export const getTokenList = () => {
-  localStorage.tokenList = !('tokenList' in localStorage) ? '[]'
-    : localStorage.tokenList;
+  store.tokenList = !('tokenList' in store) ? '[]'
+    : store.tokenList;
   try {
-    return JSON.parse(localStorage.tokenList);
+    return JSON.parse(store.tokenList);
   } catch (e) {
-    localStorage.tokenList = '[]';
+    store.tokenList = '[]';
     return [];
   }
 };
 
 export const setTokenList = (tokenList = []) => {
-  localStorage.tokenList = JSON.stringify(tokenList);
+  store.tokenList = JSON.stringify(tokenList);
 };
 
 const findAccount = (accountName = '') => getTokenList()
@@ -46,22 +52,22 @@ export const removeToken = (token) => {
   if (index > -1) {
     const tokenList = getTokenList();
     tokenList.splice(index, 1);
-    localStorage.tokenList = tokenList;
+    store.tokenList = tokenList;
   }
 };
 
 export const removeAllTokens = () => {
-  delete localStorage.tokenList;
+  delete store.tokenList;
 };
 
-export const isDone = (varName) => varName in localStorage;
+export const isDone = (varName) => varName in store;
 
 export const setDone = (varName) => {
-  localStorage[varName] = true;
+  store[varName] = true;
 };
 
 export const set = (varName, value) => {
-  localStorage[varName] = value;
+  store[varName] = value;
 };
 
-export const get = (varName) => localStorage[varName];
+export const get = (varName) => store[varName];
