@@ -9,8 +9,8 @@ export default class CustomApi {
     let option = {};
     if (typeof window !== 'undefined') {
       option = {
-        language: getStorage('lang'),
-        appId: getStorage('appId'),
+        language: localStorage ? getStorage('lang') : 'en',
+        appId: localStorage ? getStorage('appId') : 0,
       };
     }
     if (websocketMock) {
