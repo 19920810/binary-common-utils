@@ -1,6 +1,8 @@
+import { Map, List } from 'immutable';
+
 export default class Observer {
   constructor() {
-    this.eventActionMap = {};
+    this.eam = new Map(); // event action map
   }
   register(event, _action, once, unregisterIfError, unregisterAllBefore) {
     if (unregisterAllBefore) {
@@ -30,43 +32,26 @@ export default class Observer {
       }
       _action(...args);
     };
-    const actionList = this.eventActionMap[event];
-    if (actionList) {
-      actionList.push({
-        action,
-        searchBy: _action,
-      });
-    } else {
-      this.eventActionMap[event] = [{
-        action,
-        searchBy: _action,
-      }];
-    }
+
+    const actionList = this.eam.get(event);
+
+    this.eam = actionList ?
+      this.eam.set(event, actionList.push({ action, searchBy: _action })) :
+      this.eam.set(event, new List().push({ action, searchBy: _action }));
   }
-  unregister(event, _function) {
-    const actionList = this.eventActionMap[event];
-    const i = actionList.findIndex((r) => r.searchBy === _function);
-    if (i >= 0) {
-      actionList.splice(i, 1);
-    }
+  unregister(event, f) {
+    this.eam = this.eam.set(event,
+      this.eam.get(event).filter(r => r.searchBy !== f));
   }
   isRegistered(event) {
-    return event in this.eventActionMap;
+    return this.eam.has(event);
   }
   unregisterAll(event) {
-    delete this.eventActionMap[event];
+    this.eam = this.eam.delete(event);
   }
   emit(event, data) {
-    if (event in this.eventActionMap) {
-      const actions = [...this.eventActionMap[event]];
-      for (const action of actions) {
-        action.action(data);
-      }
+    if (this.eam.has(event)) {
+      this.eam.get(event).forEach(action => action.action(data));
     }
   }
-  destroy() {
-    this.eventActionMap = {};
-  }
 }
-
-export const observer = new Observer();

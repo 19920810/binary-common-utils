@@ -5,14 +5,14 @@ describe('Account', () => {
   let callbackResult;
   const expected = [{
     account_name: 'VRTC1339394',
-    token: 'nmjKBPWxM00E8Fh',
+    token: process.env.TESTINGTOKEN,
     isVirtual: true,
     hasRealityCheck: false,
     hasTradeLimitation: false,
   }];
   before(function beforeAll(done) {
     this.timeout('4000');
-    addTokenIfValid('nmjKBPWxM00E8Fh', (result) => {
+    addTokenIfValid(process.env.TESTINGTOKEN, (result) => {
       callbackResult = result;
       done();
     });

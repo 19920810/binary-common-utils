@@ -1,8 +1,10 @@
 import { expect } from 'chai'; // eslint-disable-line import/no-extraneous-dependencies
-import { observer } from '../observer';
+import Observer from '../observer';
 
 const global = {};
 describe('Observer', () => {
+  const observer = new Observer();
+
   before(function beforeAll(done) { // eslint-disable-line prefer-arrow-callback
     observer.register('global.createVar', (obj) => {
       global[obj.name] = obj.text;

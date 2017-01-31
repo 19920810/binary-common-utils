@@ -1,11 +1,11 @@
 import { LiveApi } from 'binary-live-api';
-import { observer } from './observer';
 import { get as getStorage } from './storageManager';
 
 let proposalTypeMap = {};
 
 export default class CustomApi {
-  constructor(websocketMock = null, onClose = null, connection = null) {
+  constructor(observer, websocketMock = null, onClose = null, connection = null) {
+    this.observer = observer;
     let option = {};
     if (typeof window !== 'undefined') {
       option = {
@@ -47,11 +47,11 @@ export default class CustomApi {
             quote: +history.prices[index],
           });
         });
-        observer.emit('api.history', ticks);
+        this.observer.emit('api.history', ticks);
       },
       tick: (response) => {
         const tick = response.tick;
-        observer.emit('api.tick', {
+        this.observer.emit('api.tick', {
           epoch: +tick.epoch,
           quote: +tick.quote,
         });
@@ -68,11 +68,11 @@ export default class CustomApi {
             epoch: +o.epoch,
           });
         }
-        observer.emit('api.candles', candlesList);
+        this.observer.emit('api.candles', candlesList);
       },
       ohlc: (response) => {
         const ohlc = response.ohlc;
-        observer.emit('api.ohlc', {
+        this.observer.emit('api.ohlc', {
           open: +ohlc.open,
           high: +ohlc.high,
           low: +ohlc.low,
@@ -81,15 +81,15 @@ export default class CustomApi {
         });
       },
       authorize: (response) => {
-        observer.emit('api.authorize', response.authorize);
+        this.observer.emit('api.authorize', response.authorize);
       },
       error: (response) => {
-        observer.emit('api.error', response);
+        this.observer.emit('api.error', response);
       },
       _default: (response, type) => {
-        observer.emit('api.log', response);
+        this.observer.emit('api.log', response);
         response[type].echo_req = response.echo_req;
-        observer.emit('api.' + type, response[type]);
+        this.observer.emit('api.' + type, response[type]);
       },
     };
     option.sendSpy = e => {

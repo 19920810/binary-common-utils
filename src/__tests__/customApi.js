@@ -1,12 +1,14 @@
 import { expect } from 'chai'; // eslint-disable-line import/no-extraneous-dependencies
 import ws from 'ws'; // eslint-disable-line import/no-extraneous-dependencies
-import { observer } from '../observer';
+import Observer from '../observer';
 import CustomApi from '../customApi.js';
 
 describe('CustomApi', () => {
+  const observer = new Observer();
+
   let api;
   before(() => {
-    api = new CustomApi(ws);
+    api = new CustomApi(observer, ws);
   });
   describe('authorize', () => {
     let message;
@@ -59,7 +61,7 @@ describe('CustomApi', () => {
         }, true);
         api.buy('uw2mk7no3oktoRVVsB4Dz7TQnFfABuFDgO95dlxfMxRuPUsz', 100);
       }, true);
-      api.authorize('nmjKBPWxM00E8Fh');
+      api.authorize(process.env.TESTINGTOKEN);
     });
     it('buy return InvalidContractProposal', () => {
       expect(message).to.have.deep.property('.error.code')
