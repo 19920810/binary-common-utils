@@ -1,10 +1,10 @@
+import { Map } from 'immutable';
 import { LiveApi } from 'binary-live-api';
 import { get as getStorage } from './storageManager';
 
-let proposalTypeMap = {};
-
 export default class CustomApi {
   constructor(observer, websocketMock = null, onClose = null, connection = null) {
+    this.rtm = new Map(); // proposal type map
     this.observer = observer;
     let option = {};
     if (typeof window !== 'undefined') {
@@ -95,9 +95,9 @@ export default class CustomApi {
     option.sendSpy = e => {
       const reqData = JSON.parse(e);
       if (reqData.proposal) {
-        proposalTypeMap[reqData.req_id] = reqData.contract_type;
+        this.rtm = this.rtm.set(reqData.req_id, reqData.contract_type);
       } else if (reqData.forget_all && reqData.forget_all === 'proposal') {
-        proposalTypeMap = {};
+        this.rtm = new Map();
       }
     };
     this.originalApi = new LiveApi(option);
@@ -112,7 +112,7 @@ export default class CustomApi {
           this.responseHandlers.error(data);
         } else {
           if ('proposal' in data) {
-            data.proposal.contract_type = proposalTypeMap[data.req_id];
+            data.proposal.contract_type = this.rtm.get(data.req_id);
           }
           responseHander(data, type);
         }
