@@ -61,7 +61,7 @@ describe('CustomApi', () => {
         }, true);
         api.buy('uw2mk7no3oktoRVVsB4Dz7TQnFfABuFDgO95dlxfMxRuPUsz', 100);
       }, true);
-      api.authorize(process.env.TESTINGTOKEN);
+      api.authorize('Xkq6oGFEHh6hJH8');
     });
     it('buy return InvalidContractProposal', () => {
       expect(message).to.have.deep.property('.error.code')

@@ -4,15 +4,15 @@ import { addTokenIfValid } from '../account';
 describe('Account', () => {
   let callbackResult;
   const expected = [{
-    account_name: 'VRTC1339394',
-    token: process.env.TESTINGTOKEN,
+    account_name: 'VRTC1440189',
+    token: 'Xkq6oGFEHh6hJH8',
     isVirtual: true,
     hasRealityCheck: false,
     hasTradeLimitation: false,
   }];
   before(function beforeAll(done) {
     this.timeout('4000');
-    addTokenIfValid(process.env.TESTINGTOKEN, (result) => {
+    addTokenIfValid('Xkq6oGFEHh6hJH8', (result) => {
       callbackResult = result;
       done();
     });
