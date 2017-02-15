@@ -11,8 +11,8 @@ const options = {
   appId: getStorage('appId') || 1,
 };
 
-export const addTokenIfValid = (token, callback = () => {
-  }) => {
+export const addTokenIfValid = token =>
+  new Promise((resolve, reject) => {
     const api = new LiveApi(options);
     api.authorize(token)
       .then((response) => {
@@ -22,29 +22,30 @@ export const addTokenIfValid = (token, callback = () => {
             !!response.authorize.is_virtual, !!r.landing_company_details.has_reality_check,
             ['iom', 'malta'].includes(landingCompanyName));
           api.disconnect();
-          callback(null);
+          resolve(null);
         }, () => 0);
-      }, () => {
+      }, e => {
         removeToken(token);
         api.disconnect();
-        callback('Error');
+        reject(e);
       });
-};
+  });
 
-export const logoutAllTokens = (callback) => {
-  const api = new LiveApi(options);
-  const tokenList = getTokenList();
-  const logout = () => {
-    removeAllTokens();
-    api.disconnect();
-    callback();
-  };
-  if (tokenList.length === 0) {
-    logout();
-  } else {
-    api.authorize(tokenList[0].token)
-      .then(() => {
-        api.logOut().then(logout, logout);
-      }, logout);
-  }
-};
+export const logoutAllTokens = () =>
+  new Promise(resolve => {
+    const api = new LiveApi(options);
+    const tokenList = getTokenList();
+    const logout = () => {
+      removeAllTokens();
+      api.disconnect();
+      resolve();
+    };
+    if (tokenList.length === 0) {
+      logout();
+    } else {
+      api.authorize(tokenList[0].token)
+        .then(() => {
+          api.logOut().then(logout, logout);
+        }, logout);
+    }
+  });
