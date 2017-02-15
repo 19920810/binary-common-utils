@@ -1,7 +1,7 @@
 import { expect } from 'chai'; // eslint-disable-line import/no-extraneous-dependencies
 import ws from 'ws'; // eslint-disable-line import/no-extraneous-dependencies
 import Observer from '../observer';
-import CustomApi from '../customApi.js';
+import CustomApi from '../customApi';
 
 describe('CustomApi', () => {
   const observer = new Observer();

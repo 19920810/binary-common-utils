@@ -13,8 +13,7 @@ export const addTokenIfValid = (token, callback = () => {
       api.getLandingCompanyDetails(landingCompanyName).then(r => {
         addToken(token, response.authorize.loginid,
           !!response.authorize.is_virtual, !!r.landing_company_details.has_reality_check,
-          ['iom', 'malta'].includes(landingCompanyName)
-        );
+          ['iom', 'malta'].includes(landingCompanyName));
         api.disconnect();
         callback(null);
       }, () => 0);

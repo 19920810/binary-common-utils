@@ -11,13 +11,13 @@ export default class Observer {
     const apiError = (error) => {
       if (error.type === unregisterIfError.type) {
         this.unregister('api.error', apiError);
-        for (const unreg of unregisterIfError.unregister) {
+        unregisterIfError.unregister.forEach(unreg => {
           if (unreg instanceof Array) {
             this.unregister(...unreg);
           } else {
             this.unregisterAll(unreg);
           }
-        }
+        });
       }
     };
     if (unregisterIfError) {

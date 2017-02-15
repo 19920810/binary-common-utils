@@ -57,17 +57,14 @@ export default class CustomApi {
         });
       },
       candles: (response) => {
-        const candlesList = [];
-        const candles = response.candles;
-        for (const o of candles) {
-          candlesList.push({
+        const candlesList =
+          response.candles.map(o => ({
             open: +o.open,
             high: +o.high,
             low: +o.low,
             close: +o.close,
             epoch: +o.epoch,
-          });
-        }
+          }));
         this.observer.emit('api.candles', candlesList);
       },
       ohlc: (response) => {
@@ -101,10 +98,10 @@ export default class CustomApi {
       }
     };
     this.originalApi = new LiveApi(option);
-    for (const type of Object.keys(requestHandlers)) {
+    Object.keys(requestHandlers).forEach(type => {
       const responseHander = (!this.responseHandlers[type]) ?
         this.responseHandlers._default : this.responseHandlers[type]; // eslint-disable-line no-underscore-dangle
-      this.originalApi.events.on(type, (data) => { // eslint-disable-line no-loop-func
+      this.originalApi.events.on(type, data => { // eslint-disable-line no-loop-func
         if (this.destroyed) {
           return;
         }
@@ -120,7 +117,7 @@ export default class CustomApi {
       this[type] = (...args) => {
         this.handlePromiseForCalls(type, args, requestHandlers);
       };
-    }
+    });
   }
   handlePromiseForCalls(type, args, requestHandlers) {
     const promise = requestHandlers[type](...args);
