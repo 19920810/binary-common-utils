@@ -55,3 +55,5 @@ export default class Observer {
     }
   }
 }
+
+export const observer = new Observer()
