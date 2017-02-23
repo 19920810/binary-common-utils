@@ -130,7 +130,7 @@ export default class CustomApi {
     }
   }
   destroy() {
-    this.originalApi.socket.close();
+    this.originalApi.disconnect();
     this.destroyed = true;
   }
 }
