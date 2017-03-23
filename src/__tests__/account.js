@@ -24,12 +24,12 @@ describe('Account', () => {
         .to.be.deep.equal(expected);
     });
   });
-  describe('Login on self-exclusion', () => {
+  describe('Login on invalid token', () => {
     let successfulLogin;
     let message;
     before(function beforeAll(done) {
       this.timeout('4000');
-      addTokenIfValid('a1-R89ZMPYt3Z0HcHzQcuA9WHOsYGSYi').then(() => {
+      addTokenIfValid('someinvalidtoken123xyz').then(() => {
         successfulLogin = true;
         done();
       }).catch(e => {
@@ -41,7 +41,7 @@ describe('Account', () => {
     it('Login should be unsuccessful', () => {
       expect(successfulLogin).to.be.equal(false);
       expect(message).to.have.deep.property('.error.error.code')
-        .that.be.equal('SelfExclusion');
+        .that.be.equal('InvalidToken');
     });
   });
   describe('logout', () => {
