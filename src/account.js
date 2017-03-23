@@ -24,7 +24,7 @@ export const addTokenIfValid = token =>
           api.disconnect();
           resolve(null);
         }, () => 0);
-      }, e => {
+      }).catch(e => {
         removeToken(token);
         api.disconnect();
         reject(e);
