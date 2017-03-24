@@ -24,6 +24,26 @@ describe('Account', () => {
         .to.be.deep.equal(expected);
     });
   });
+  describe('Login on invalid token', () => {
+    let successfulLogin;
+    let message;
+    before(function beforeAll(done) {
+      this.timeout('4000');
+      addTokenIfValid('someinvalidtoken123xyz').then(() => {
+        successfulLogin = true;
+        done();
+      }).catch(e => {
+        message = e;
+        successfulLogin = false;
+        done();
+      });
+    });
+    it('Login should be unsuccessful', () => {
+      expect(successfulLogin).to.be.equal(false);
+      expect(message).to.have.deep.property('.error.error.code')
+        .that.be.equal('InvalidToken');
+    });
+  });
   describe('logout', () => {
     let successfulLogout;
     before(function beforeAll(done) {
