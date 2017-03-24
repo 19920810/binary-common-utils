@@ -10,7 +10,7 @@ export default class CustomApi {
     if (typeof window !== 'undefined') {
       option = {
         language: getStorage('lang') || 'en',
-        appId: getStorage('appId') || 0,
+        appId: getStorage('appId') || 1,
       };
     }
     if (websocketMock) {
