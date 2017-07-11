@@ -26,7 +26,7 @@ export const getUTCTime = date => {
 export const durationToSecond = duration => {
   const parsedDuration = duration.match(/^([0-9]+)([stmhd])$/);
   if (!parsedDuration) {
-    return null;
+    return 0;
   }
   const durationValue = parseFloat(parsedDuration[1]);
   const durationType = parsedDuration[2];
