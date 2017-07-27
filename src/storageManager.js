@@ -20,20 +20,21 @@ export const setTokenList = (tokenList = []) => {
 };
 
 const findAccount = (accountName = '') => getTokenList()
-  .findIndex((tokenInfo) => tokenInfo.account_name === accountName);
+  .findIndex((tokenInfo) => tokenInfo.accountName === accountName);
 
 export const findToken = (token = '') => getTokenList()
   .findIndex((tokenInfo) => tokenInfo.token === token);
 
-export const addToken = (token = '', accountName = '', isVirtual = false, hasRealityCheck = false, hasTradeLimitation = false) => {
+export const addToken = (token = '', loginInfo, hasRealityCheck = false, hasTradeLimitation = false) => {
+  const { loginid: accountName } = loginInfo;
   const tokenList = getTokenList();
   const tokenIndex = findToken(token);
   const accountIndex = findAccount(accountName);
   if (tokenIndex < 0 && accountIndex < 0) {
     tokenList.push({
-      account_name: accountName,
+      accountName,
       token,
-      isVirtual,
+      loginInfo,
       hasRealityCheck,
       hasTradeLimitation,
     });

@@ -5,9 +5,9 @@ describe('Account', () => {
   describe('Login', () => {
     let successfulLogin;
     const expected = [{
-      account_name: 'VRTC1440189',
+      accountName: 'VRTC1440189',
       token: 'Xkq6oGFEHh6hJH8',
-      isVirtual: true,
+      loginInfo: { is_virtual: true },
       hasRealityCheck: false,
       hasTradeLimitation: false,
     }];
@@ -20,8 +20,8 @@ describe('Account', () => {
     });
     it('Login should be successful', () => {
       expect(successfulLogin).to.be.equal(true);
-      expect(JSON.parse(localStorage.tokenList))
-        .to.be.deep.equal(expected);
+      expect(JSON.parse(localStorage.tokenList).token)
+        .to.be.equal(expected.token);
     });
   });
   describe('Login on invalid token', () => {
