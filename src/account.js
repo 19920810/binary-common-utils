@@ -6,6 +6,7 @@ import {
 
 
 const options = {
+  apiUrl: getStorage('endpoint'),
   websocket: typeof WebSocket === 'undefined' ? require('ws') : undefined, // eslint-disable-line global-require
   language: getStorage('lang') || 'en',
   appId: getStorage('appId') || 1,
