@@ -6,7 +6,7 @@ import {
 
 
 const options = {
-  apiUrl: 'wss://' + getStorage('config.server_url') + '/websockets/v3',
+  apiUrl: `wss://${getStorage('config.server_url')}/websockets/v3`,
   websocket: typeof WebSocket === 'undefined' ? require('ws') : undefined, // eslint-disable-line global-require
   language: getStorage('lang') || 'en',
   appId: getStorage('config.app_id') || 1,
